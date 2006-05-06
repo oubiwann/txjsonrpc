@@ -1,6 +1,7 @@
 2006.05.06
 
 * Added a beginning sketch of JSON over TCP in protocols.json.
+* Some protocol tweaks.
 
 2006.05.05
 

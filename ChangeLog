@@ -12,3 +12,4 @@ adytum.jsonrpclib.
 * Added client and server examples.
 * Made adytum and adytum.twisted setuptools namespaces.
 * Updated the example client.
+* Updated the TODO file.

@@ -1,0 +1,5 @@
+2006.05.05
+
+* Added directory place holders and __init__.py files.
+* Added basic files.
+* Copied jsonrpc.py from the adytum library.

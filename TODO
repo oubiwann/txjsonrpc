@@ -1,0 +1,14 @@
+twisted.web JSON-RPC
+====================
+
+twisted.web2 JSON-RPC
+=====================
+
+JSON-RPC over TCP
+=================
+
+jsonrpclib
+==========
+
+* return results in simpljson dicts with possible keeys of "result" or "error"
+* use simplesjon's hook for creating appropriate JS objects from hints in the results

@@ -20,21 +20,21 @@ class JSONStream(object):
 
 class JSONLineReceiver(basic.LineReceiver):
 
-    def __init__(self):
+    def __init__(self, maxlen=32768):
         basic.LineReceiver.__init__(self)
-        self.stream = None
+        self.MAX_LENGTH = maxlen
 
     def connectionMade(self):
-        self.stream = JSONStream()
+        pass
 
     def rawDataReceived(self, data):
         try:
-            self.stream.parse(data)
+            simplejson.loads(data)
         except JSONParseError:
             self.transport.loseConnection()
 
     def connectionLost(self, reason):
-        self.stream = None
+        pass
             
 class JSONRawReceiverFactory(protocol.Protocol)
 

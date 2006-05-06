@@ -12,7 +12,6 @@ Maintainer: U{Itamar Shtull-Trauring<mailto:twisted@itamarst.org>}
 """
 
 # System Imports
-import jsonrpclib
 import urlparse
 
 # Sibling Imports
@@ -21,17 +20,7 @@ from twisted.web2 import responsecode, http, http_headers
 from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 
-# Useful so people don't need to import jsonrpclib directly
-Fault = jsonrpclib.Fault
-Binary = jsonrpclib.Binary
-Boolean = jsonrpclib.Boolean
-DateTime = jsonrpclib.DateTime
-
-
-class NoSuchFunction(Fault):
-    """There is no function by the given name."""
-    pass
-
+from adytum import jsonrpclib
 
 class JSONRPC(resource.Resource):
     """A resource that implements JSON-RPC.
@@ -94,22 +83,22 @@ class JSONRPC(resource.Resource):
         return defer.maybeDeferred(function, request, *args)
 
     def _cbRender(self, result, request):
-        if not isinstance(result, Fault):
+        if not isinstance(result, jsonrpclib.Fault):
             result = (result,)
         try:
-            s = jsonrpclib.dumps(result, methodresponse=1)
+            s = jsonrpclib.dumps(result)
         except:
-            f = Fault(self.FAILURE, "can't serialize output")
-            s = jsonrpclib.dumps(f, methodresponse=1)
+            f = jsonrpclib.Fault(self.FAILURE, "can't serialize output")
+            s = jsonrpclib.dumps(f)
         return http.Response(responsecode.OK, 
-            {'content-type': http_headers.MimeType('text', 'xml')},
+            {'content-type': http_headers.MimeType('text', 'json')},
             s)
 
     def _ebRender(self, failure):
-        if isinstance(failure.value, Fault):
+        if isinstance(failure.value, jsonrpclib.Fault):
             return failure.value
         log.err(failure)
-        return Fault(self.FAILURE, "error")
+        return jsonrpclib.Fault(self.FAILURE, "error")
 
     def getFunction(self, functionPath):
         """Given a string, return a function, or raise NoSuchFunction.
@@ -126,14 +115,18 @@ class JSONRPC(resource.Resource):
         if functionPath.find(self.separator) != -1:
             prefix, functionPath = functionPath.split(self.separator, 1)
             handler = self.getSubHandler(prefix)
-            if handler is None: raise NoSuchFunction(self.NOT_FOUND, "no such subHandler %s" % prefix)
+            if handler is None:
+                raise jsonrpclib.NoSuchFunction(self.NOT_FOUND, 
+                    "no such subHandler %s" % prefix)
             return handler.getFunction(functionPath)
 
         f = getattr(self, "jsonrpc_%s" % functionPath, None)
         if not f:
-            raise NoSuchFunction(self.NOT_FOUND, "function %s not found" % functionPath)
+            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND, 
+                "function %s not found" % functionPath)
         elif not callable(f):
-            raise NoSuchFunction(self.NOT_FOUND, "function %s not callable" % functionPath)
+            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND, 
+                "function %s not callable" % functionPath)
         else:
             return f
 
@@ -209,4 +202,4 @@ def addIntrospection(jsonrpc):
     jsonrpc.putSubHandler('system', JSONRPCIntrospection(jsonrpc))
 
 
-__all__ = ["JSONRPC", "NoSuchFunction", "Fault"]
+__all__ = ["JSONRPC"]

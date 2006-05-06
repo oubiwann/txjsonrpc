@@ -39,3 +39,26 @@ def loads(s, **kws):
         raise Fault(unmarshalled['faultCode'],
             unmarshalled['faultString'])
     return unmarshalled
+
+class BogusParser(object):
+
+    def feed(self, data):
+        self.data = loads(data)
+
+    def close(self):
+        pass
+
+class BogusUnmarshaller(object):
+
+    def getmethodname(self):
+        return self.parser.data.get("method")
+
+    def close(self):
+        return self.parser.data.get("params")
+
+def getparser():
+    parser = BogusParser()
+    marshaller = BogusUnmarshaller()
+    marshaller.parser = parser
+    return parser, marshaller
+

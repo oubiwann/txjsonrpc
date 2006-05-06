@@ -93,19 +93,15 @@ class JSONRPC(resource.Resource):
 
     def render(self, request):
         request.content.seek(0, 0)
-        # XXX
         # Unmarshal the JSON-RPC data
         content = request.content.read()
-        #print "Got content: %s" % content
         parsed = jsonrpclib.loads(content)
-        #print "Parsed content: %s" % parsed
         args, functionPath = parsed.get('params'), parsed.get("method")
         try:
             function = self._getFunction(functionPath)
         except jsonrpclib.Fault, f:
             self._cbRender(f, request)
         else:
-            # XXX
             request.setHeader("content-type", "text/json")
             defer.maybeDeferred(function, *args).addErrback(
                 self._ebRender
@@ -121,14 +117,10 @@ class JSONRPC(resource.Resource):
             result = (result,)
         # Convert the result (python) to JSON-RPC
         try:
-            # XXX
-            #print result
             s = jsonrpclib.dumps(result)
         except:
             f = jsonrpclib.Fault(self.FAILURE, "can't serialize output")
             s = jsonrpclib.dumps(f)
-            #print "in _cbRender() except block, s = %s" % s
-        #print "in _cbRender(), s = %s" % s
         request.setHeader("content-length", str(len(s)))
         request.write(s)
         request.finish()

@@ -5,3 +5,5 @@
 * Copied jsonrpc.py from the adytum library.
 * Moved proto-jsonrpclib code out of a.t.web.jsonrpc and into
 adytum.jsonrpclib.
+* Added copies of t.w2.xmlrpc and tests and renamed them to jsonrpc.
+* a.t.w2.jsonrpc has been ported and passes all tests.

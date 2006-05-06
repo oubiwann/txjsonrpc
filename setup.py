@@ -6,22 +6,20 @@ version = open('VERSION').read().strip()
 
 setup(name="Twisted-JSONRPC",
     version=version,
-    description="Python Enterprise Monitoring Application",
+    description="Twisted JSON-RPC servers and clients.",
     author="Duncan McGreggor",
     author_email="duncan@adytum.us",
     url="http://projects.adytum.us/tracs/JSON-RPC",
     license="BSD",
-    long_description='''pymon is an open source network and process
-        monitoring solution implemented in python. The interface and
-        conifiguration is designed to be easily and rapidly deployed,
-        saving on time and overhead often associated with other 
-        monitoring solutions.''',
+    long_description='''
+        Twisted JSON-RPC servers and clients.
+        ''',
     packages=[
-        'pymon',
-        'pymon.twisted',
-        'pymon.twisted.protocols',
-        'pymon.twisted.web',
-        'pymon.twisted.web2',
+        'adytum',
+        'adytum.twisted',
+        'adytum.twisted.protocols',
+        'adytum.twisted.web',
+        'adytum.twisted.web2',
     ],
     package_dir = {
         'adytum': 'adytum',

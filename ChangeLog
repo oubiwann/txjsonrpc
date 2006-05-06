@@ -7,3 +7,6 @@
 adytum.jsonrpclib.
 * Added copies of t.w2.xmlrpc and tests and renamed them to jsonrpc.
 * a.t.w2.jsonrpc has been ported and passes all tests.
+* Updated setup.py.
+* Added ez_setup.py.
+* Added client and server examples.

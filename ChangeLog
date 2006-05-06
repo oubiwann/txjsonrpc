@@ -10,3 +10,5 @@ adytum.jsonrpclib.
 * Updated setup.py.
 * Added ez_setup.py.
 * Added client and server examples.
+* Made adytum and adytum.twisted setuptools namespaces.
+* Updated the example client.

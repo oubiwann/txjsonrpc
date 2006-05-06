@@ -24,7 +24,7 @@ setup(name="Twisted-JSONRPC",
     package_dir = {
         'adytum': 'adytum',
     },
-    zip_safe=False,
+    namespace_packages = ['adytum', 'adytum.twisted'],
     classifiers = [f.strip() for f in """
     """.splitlines() if f.strip()],
 

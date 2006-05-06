@@ -1,3 +1,7 @@
+2006.05.06
+
+* Added a beginning sketch of JSON over TCP in protocols.json.
+
 2006.05.05
 
 * Added directory place holders and __init__.py files.

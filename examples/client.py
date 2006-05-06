@@ -1,5 +1,10 @@
-from adytum.twisted.web.jsonrpc import Proxy
 from twisted.internet import reactor
+try:
+    from adytum.twisted.web.jsonrpc import Proxy
+except ImportError:
+    from pkg_resources import require
+    require('Twisted-JSONRPC')
+    from adytum.twisted.web.jsonrpc import Proxy
 
 def printValue(value):
     print repr(value)

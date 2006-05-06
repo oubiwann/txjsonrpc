@@ -3,3 +3,5 @@
 * Added directory place holders and __init__.py files.
 * Added basic files.
 * Copied jsonrpc.py from the adytum library.
+* Moved proto-jsonrpclib code out of a.t.web.jsonrpc and into
+adytum.jsonrpclib.

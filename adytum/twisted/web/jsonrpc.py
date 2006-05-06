@@ -30,38 +30,7 @@ from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 from twisted.web import http
 
-# From xmlrpclib
-SERVER_ERROR          = xmlrpclib.SERVER_ERROR
-NOT_WELLFORMED_ERROR  = xmlrpclib.NOT_WELLFORMED_ERROR
-UNSUPPORTED_ENCODING  = xmlrpclib.UNSUPPORTED_ENCODING
-INVALID_ENCODING_CHAR = xmlrpclib.INVALID_ENCODING_CHAR
-INVALID_JSONRPC       = xmlrpclib.INVALID_XMLRPC
-METHOD_NOT_FOUND      = xmlrpclib.METHOD_NOT_FOUND
-INVALID_METHOD_PARAMS = xmlrpclib.INVALID_METHOD_PARAMS
-INTERNAL_ERROR        = xmlrpclib.INTERNAL_ERROR
-Fault                 = xmlrpclib.Fault
-# Custom errors
-METHOD_NOT_CALLABLE   = -32604
-
-class NoSuchFunction(Fault):
-    """There is no function by the given name."""
-    pass
-
-def dumps(obj, **kws):
-    if isinstance(obj, Exception):
-        obj = {'fault': obj.__class__.__name__,
-            'faultCode': obj.faultCode,
-            'faultString': obj.faultString}
-    #print "In dumps(), obj = %s" % obj
-    return simplejson.dumps(obj, **kws)
-
-def loads(s, **kws):
-    unmarshalled = simplejson.loads(s, **kws)
-    if (isinstance(unmarshalled, dict) and
-        unmarshalled.has_key('fault')):
-        raise Fault(unmarshalled['faultCode'],
-            unmarshalled['faultString'])
-    return unmarshalled
+from adytum import jsonrpclib
 
 class Handler:
     """Handle a JSON-RPC request and store the state for a request in progress.
@@ -128,12 +97,12 @@ class JSONRPC(resource.Resource):
         # Unmarshal the JSON-RPC data
         content = request.content.read()
         #print "Got content: %s" % content
-        parsed = loads(content)
+        parsed = jsonrpclib.loads(content)
         #print "Parsed content: %s" % parsed
         args, functionPath = parsed.get('params'), parsed.get("method")
         try:
             function = self._getFunction(functionPath)
-        except Fault, f:
+        except jsonrpclib.Fault, f:
             self._cbRender(f, request)
         else:
             # XXX
@@ -148,16 +117,16 @@ class JSONRPC(resource.Resource):
     def _cbRender(self, result, request):
         if isinstance(result, Handler):
             result = result.result
-        if not isinstance(result, Fault):
+        if not isinstance(result, jsonrpclib.Fault):
             result = (result,)
         # Convert the result (python) to JSON-RPC
         try:
             # XXX
             #print result
-            s = dumps(result)
+            s = jsonrpclib.dumps(result)
         except:
-            f = Fault(self.FAILURE, "can't serialize output")
-            s = dumps(f)
+            f = jsonrpclib.Fault(self.FAILURE, "can't serialize output")
+            s = jsonrpclib.dumps(f)
             #print "in _cbRender() except block, s = %s" % s
         #print "in _cbRender(), s = %s" % s
         request.setHeader("content-length", str(len(s)))
@@ -165,13 +134,13 @@ class JSONRPC(resource.Resource):
         request.finish()
 
     def _ebRender(self, failure):
-        if isinstance(failure.value, Fault):
+        if isinstance(failure.value, jsonrpclib.Fault):
             return failure.value
         log.err(failure)
-        return Fault(self.FAILURE, "error")
+        return jsonrpclib.Fault(self.FAILURE, "error")
 
     def _getFunction(self, functionPath):
-        """Given a string, return a function, or raise NoSuchFunction.
+        """Given a string, return a function, or raise jsonrpclib.NoSuchFunction.
 
         This returned function will be called, and should return the result
         of the call, a Deferred, or a Fault instance.
@@ -187,16 +156,16 @@ class JSONRPC(resource.Resource):
             prefix, functionPath = functionPath.split(self.separator, 1)
             handler = self.getSubHandler(prefix)
             if handler is None: 
-                raise NoSuchFunction(METHOD_NOT_FOUND, 
+                raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND, 
                     "no such sub-handler %s" % prefix)
             return handler._getFunction(functionPath)
 
         f = getattr(self, "jsonrpc_%s" % functionPath, None)
         if not f:
-            raise NoSuchFunction(METHOD_NOT_FOUND, 
+            raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND, 
                 "function %s not found" % functionPath)
         elif not callable(f):
-            raise NoSuchFunction(METHOD_NOT_CALLABLE, 
+            raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_CALLABLE, 
                 "function %s not callable" % functionPath)
         else:
             return f
@@ -305,7 +274,7 @@ class QueryFactory(protocol.ClientFactory):
         self.user, self.password = user, password
         # pass the method name and JSON-RPC args (converted from python)
         # into the template
-        self.payload = dumps({
+        self.payload = jsonrpclib.dumps({
             'method':method, 
             'params':args})
         self.deferred = defer.Deferred()
@@ -317,7 +286,7 @@ class QueryFactory(protocol.ClientFactory):
             # convert the response from JSON-RPC to python
             #print "Python type of response contents: %s" % type(contents)
             #print "Response contents: %s" % contents
-            response = loads(contents)
+            response = jsonrpclib.loads(contents)
             #print "Parsed contents: %s" % response
             if isinstance(response, list):
                 response = response[0]
@@ -410,4 +379,4 @@ class Proxy:
             reactor.connectTCP(self.host, self.port or 80, factory)
         return factory.deferred
 
-__all__ = ["JSONRPC", "Handler", "NoSuchFunction", "Fault", "Proxy"]
+__all__ = ["JSONRPC", "Handler", "jsonrpclib.NoSuchFunction", "Proxy"]

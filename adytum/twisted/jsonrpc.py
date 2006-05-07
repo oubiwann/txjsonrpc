@@ -312,5 +312,5 @@ class RPCFactory(protocol.ServerFactory):
         self.putSubHandler('system', JSONRPCIntrospection, ('protocol',))
 
 
-__all__ = ["JSONRPC", "Proxy"]
+__all__ = ["JSONRPC", "Proxy", "RPCFactory"]
 

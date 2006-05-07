@@ -1,3 +1,8 @@
+2006.05.07
+
+* Added a.t.jsonrpc.RPCFactory to __all__.
+* Renamed some of the variables in the examples to be more accurate.
+
 2006.05.06
 
 * Added a beginning sketch of JSON over TCP in protocols.json.

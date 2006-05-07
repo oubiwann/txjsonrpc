@@ -6,6 +6,8 @@
 directory.
 * Converted a.t.w2.jsonrpc and the client portion of a.t.w.jsonrpc to use the
 NetstringReceiver protocol for JSON-RPC over TCP.
+* Removed protocol code, since we don't need a custom protocol for JSON-RCP
+over TCP.
 
 2006.05.05
 

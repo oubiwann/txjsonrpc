@@ -8,7 +8,7 @@
 
 API Stability: semi-stable
 
-Maintainer: U{Itamar Shtull-Trauring<mailto:twisted@itamarst.org>}
+Maintainer: U{Duncan McGreggor <mailto:oubiwann@adytum.us>}
 """
 
 # System Imports

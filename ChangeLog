@@ -2,6 +2,10 @@
 
 * Added a beginning sketch of JSON over TCP in protocols.json.
 * Some protocol tweaks.
+* Added test top-level directory as well as an adytum.twisted-level test
+directory.
+* Converted a.t.w2.jsonrpc and the client portion of a.t.w.jsonrpc to use the
+NetstringReceiver protocol for JSON-RPC over TCP.
 
 2006.05.05
 

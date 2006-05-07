@@ -371,4 +371,4 @@ class Proxy:
             reactor.connectTCP(self.host, self.port or 80, factory)
         return factory.deferred
 
-__all__ = ["JSONRPC", "Handler", "jsonrpclib.NoSuchFunction", "Proxy"]
+__all__ = ["JSONRPC", "Handler", "Proxy"]

@@ -43,3 +43,7 @@ class JSONRawReceiverFactory(protocol.Protocol)
         p.setRawMode()
         p.factory = self
         return p
+
+class JSONNetstring(basic.NetstringReceiver):
+    pass
+    

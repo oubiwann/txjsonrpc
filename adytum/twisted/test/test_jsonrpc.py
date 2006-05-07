@@ -5,7 +5,7 @@
 
 # 
 
-"""Test XML-RPC support."""
+"""Test JSON-RPC over TCP support."""
 import time
 
 from twisted.trial import unittest
@@ -33,7 +33,7 @@ class Test(JSONRPC):
     addSlash = True # cause it's at the root
     
     # the doc string is part of the test
-    def jsonrpc_add(self, request, a, b):
+    def jsonrpc_add(self, a, b):
         """This function add two numbers."""
         return a + b
 
@@ -41,34 +41,34 @@ class Test(JSONRPC):
                             ['double', 'double', 'double']]
 
     # the doc string is part of the test
-    def jsonrpc_pair(self, request, string, num):
+    def jsonrpc_pair(self, string, num):
         """This function puts the two arguments in an array."""
         return [string, num]
 
     jsonrpc_pair.signature = [['array', 'string', 'int']]
 
     # the doc string is part of the test
-    def jsonrpc_defer(self, request, x):
+    def jsonrpc_defer(self, x):
         """Help for defer."""
         return defer.succeed(x)
 
-    def jsonrpc_deferFail(self, request):
+    def jsonrpc_deferFail(self):
         return defer.fail(TestValueError())
 
     # don't add a doc string, it's part of the test
-    def jsonrpc_fail(self, request):
+    def jsonrpc_fail(self):
         raise TestRuntimeError
 
-    def jsonrpc_fault(self, request):
+    def jsonrpc_fault(self):
         return jsonrpclib.Fault(12, "hello")
 
-    def jsonrpc_deferFault(self, request):
+    def jsonrpc_deferFault(self):
         return defer.fail(jsonrpclib.Fault(17, "hi"))
 
-    def jsonrpc_complex(self, request):
+    def jsonrpc_complex(self):
         return {"a": ["b", "c", 12, []], "D": "foo"}
 
-    def jsonrpc_dict(self, request, map, key):
+    def jsonrpc_dict(self, map, key):
         return map[key]
 
     def getFunction(self, functionPath):
@@ -86,7 +86,7 @@ class Test(JSONRPC):
 class JSONRPCTestCase(unittest.TestCase):
     
     def setUp(self):
-        self.p = reactor.listenTCP(0, jsonrpc.RPCFactory(Test)),
+        self.p = reactor.listenTCP(0, jsonrpc.RPCFactory(Test),
                                    interface="127.0.0.1")
         self.port = self.p.getHost().port
 
@@ -94,7 +94,7 @@ class JSONRPCTestCase(unittest.TestCase):
         return self.p.stopListening()
 
     def proxy(self):
-        return Proxy("http://127.0.0.1:%d/" % self.port)
+        return Proxy("127.0.0.1", self.port)
 
     def testResults(self):
         inputOutput = [
@@ -103,11 +103,15 @@ class JSONRPCTestCase(unittest.TestCase):
             ("dict", ({"a": 1}, "a"), 1),
             ("pair", ("a", 1), ["a", 1]),
             ("complex", (), {"a": ["b", "c", 12, []], "D": "foo"})]
+        def printError(error):
+            print "Error!"
+            print error
 
         dl = []
         for meth, args, outp in inputOutput:
             d = self.proxy().callRemote(meth, *args)
             d.addCallback(self.assertEquals, outp)
+            d.addErrback(printError)
             dl.append(d)
         return defer.DeferredList(dl, fireOnOneErrback=True)
 
@@ -124,21 +128,13 @@ class JSONRPCTestCase(unittest.TestCase):
         d.addCallback(lambda ign: log.flushErrors(TestRuntimeError, TestValueError))
         return d
 
-
-class JSONRPCTestCase2(JSONRPCTestCase):
-    """Test with proxy that doesn't add a slash."""
-
-    def proxy(self):
-        return Proxy("http://127.0.0.1:%d" % self.port)
-
-
 class JSONRPCTestIntrospection(JSONRPCTestCase):
 
     def setUp(self):
-        rpc = Test()
-        addIntrospection(rpc)
-        self.p = reactor.listenTCP(0, jsonrpc.RPCFactory(rpc),
-            interface="127.0.0.1")
+        server = jsonrpc.RPCFactory(Test)
+        addIntrospection(server)
+        #server.addIntrospection()
+        self.p = reactor.listenTCP(0, server, interface="127.0.0.1")
         self.port = self.p.getHost().port
 
     def testListMethods(self):

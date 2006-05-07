@@ -48,6 +48,9 @@ class JSONRPC(basic.NetstringReceiver):
     def __init__(self):
         self.subHandlers = {}
 
+    def __call__(self):
+        return self
+
     def connectionMade(self):
         self.MAX_LENGTH = self.factory.maxLength
 
@@ -78,15 +81,17 @@ class JSONRPC(basic.NetstringReceiver):
     def _cbRender(self, result):
         if not isinstance(result, jsonrpclib.Fault):
             result = (result,)
-        s = None
-        e = None
+        #s = None
+        #e = None
         try:
             s = jsonrpclib.dumps(result)
         except:
             f = jsonrpclib.Fault(self.FAILURE, "can't serialize output")
-            e = jsonrpclib.dumps(f)
-        result = {'result': result, 'error': e}
-        return self.sendString(jsonrpclib.dumps(result))
+            #e = jsonrpclib.dumps(f)
+            s = jsonrpclib.dumps(f)
+        #result = {'result': result, 'error': e}
+        #return self.sendString(jsonrpclib.dumps(result))
+        return self.sendString(s)
 
     def _ebRender(self, failure):
         if isinstance(failure.value, jsonrpclib.Fault):
@@ -150,7 +155,7 @@ class JSONRPCIntrospection(JSONRPC):
         JSONRPC.__init__(self)
         self._jsonrpc_parent = parent
 
-    def jsonrpc_listMethods(self, request):
+    def jsonrpc_listMethods(self):
         """Return a list of the method names implemented by this server."""
         functions = []
         todo = [(self._jsonrpc_parent, '')]
@@ -160,11 +165,12 @@ class JSONRPCIntrospection(JSONRPC):
             todo.extend([ (obj.getSubHandler(name),
                            prefix + name + obj.separator)
                           for name in obj.getSubHandlerPrefixes() ])
+        functions.sort()
         return functions
 
     jsonrpc_listMethods.signature = [['array']]
 
-    def jsonrpc_methodHelp(self, request, method):
+    def jsonrpc_methodHelp(self, method):
         """Return a documentation string describing the use of the given method.
         """
         method = self._jsonrpc_parent.getFunction(method)
@@ -173,7 +179,7 @@ class JSONRPCIntrospection(JSONRPC):
 
     jsonrpc_methodHelp.signature = [['string', 'string']]
 
-    def jsonrpc_methodSignature(self, request, method):
+    def jsonrpc_methodSignature(self, method):
         """Return a list of type signatures.
 
         Each type signature is a list of the form [rtype, type1, type2, ...]
@@ -193,7 +199,7 @@ def addIntrospection(jsonrpc):
 
     @param jsonrpc: The jsonrpc server to add Introspection support to.
     """
-    jsonrpc.putSubHandler('system', JSONRPCIntrospection(jsonrpc))
+    jsonrpc.putSubHandler('system', JSONRPCIntrospection, ('protocol',))
 
 class QueryProtocol(basic.NetstringReceiver):
 
@@ -226,12 +232,12 @@ class QueryFactory(protocol.ClientFactory):
             return
         try:
             # convert the response from JSON-RPC to python
-            response = jsonrpclib.loads(contents)
-            result = response['result']
-            error = response['error']
-            if error:
-                self.deferred.errback(error)
-            #print "Parsed contents: %s" % response
+            result = jsonrpclib.loads(contents)
+            #response = jsonrpclib.loads(contents)
+            #result = response['result']
+            #error = response['error']
+            #if error:
+            #    self.deferred.errback(error)
             if isinstance(result, list):
                 result = result[0]
         except Exception, error:
@@ -280,13 +286,31 @@ class Proxy:
         reactor.connectTCP(self.host, self.port, factory)
         return factory.deferred
 
-class RPCFactory(protocol.Factory):
+class RPCFactory(protocol.ServerFactory):
 
     protocol = None
 
-    def __init__(self, JSONRPCSubclass, maxLength=1024):
+    def __init__(self, rpcClass, maxLength=1024):
         self.maxLength = maxLength
-        self.protocol = JSONRPCSubclass
+        self.protocol = rpcClass
+        self.subHandlers = {}
+
+    def buildProtocol(self, addr):
+        p = protocol.ServerFactory.buildProtocol(self, addr)
+        for key, val in self.subHandlers.items():
+            klass, args, kws = val
+            if args and args[0] == 'protocol':
+                p.putSubHandler(key, klass(p))
+            else:
+                p.putSubHandler(key, klass(*args, **kws))
+        return p
+
+    def putSubHandler(self, name, klass, args=(), kws={}):
+        self.subHandlers[name] = (klass, args, kws)
+
+    def addIntrospection(self):
+        self.putSubHandler('system', JSONRPCIntrospection, ('protocol',))
+
 
 __all__ = ["JSONRPC", "Proxy"]
 

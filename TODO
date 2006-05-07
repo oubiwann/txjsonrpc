@@ -6,6 +6,9 @@ twisted.web2 JSON-RPC
 
 JSON-RPC over TCP
 =================
+* pull out anything that has to do with setting the payload (e.g., method/params dict)
+  and put it in jsonrpclib
+* clean up error checking, now that errors are going in the payload under the "error" key.
 
 jsonrpclib
 ==========

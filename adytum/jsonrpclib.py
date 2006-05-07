@@ -32,8 +32,8 @@ def dumps(obj, **kws):
     #print "In dumps(), obj = %s" % obj
     return simplejson.dumps(obj, **kws)
 
-def loads(s, **kws):
-    unmarshalled = simplejson.loads(s, **kws)
+def loads(string, **kws):
+    unmarshalled = simplejson.loads(string, **kws)
     if (isinstance(unmarshalled, dict) and
         unmarshalled.has_key('fault')):
         raise Fault(unmarshalled['faultCode'],

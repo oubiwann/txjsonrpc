@@ -29,15 +29,15 @@ class Math(jsonrpc.JSONRPC):
 # Note that this is a different approach that that used by 
 # twisted.web[2].xmlrpc. Here, we are putting the subhandlers on the 
 # server as opposed to putting them on the top-level RPC class.
-server = jsonrpc.RPCFactory(Example)
-server.putSubHandler('math', Math)
-server.putSubHandler('testing', Testing)
+factory = jsonrpc.RPCFactory(Example)
+factory.putSubHandler('math', Math)
+factory.putSubHandler('testing', Testing)
 
 # Let's add introspection, just for fun
-server.addIntrospection()
+factory.addIntrospection()
 
 application = service.Application("Example JSON-RPC Server")
-jsonrpcServer = internet.TCPServer(7080, server)
+jsonrpcServer = internet.TCPServer(7080, factory)
 jsonrpcServer.setServiceParent(application)
 
 

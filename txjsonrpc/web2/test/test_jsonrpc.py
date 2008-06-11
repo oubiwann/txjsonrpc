@@ -14,13 +14,13 @@ from twisted.internet import reactor, defer
 from twisted.python import log
 
 try:
-    from adytum.twisted.web.jsonrpc import Proxy
+    from txjsonrpc.web.jsonrpc import Proxy
 except ImportError:
     Proxy = None
 
-from adytum import jsonrpclib
-from adytum.twisted.web2 import jsonrpc
-from adytum.twisted.web2.jsonrpc import JSONRPC, addIntrospection
+from txjsonrpc import jsonrpclib
+from txjsonrpc.web2 import jsonrpc
+from txjsonrpc.web2.jsonrpc import JSONRPC, addIntrospection
 
 import time
 
@@ -130,7 +130,7 @@ class JSONRPCTestCase(unittest.TestCase):
             d.addCallback(lambda exc, code=code: self.assertEquals(exc.faultCode, code))
             dl.append(d)
         d = defer.DeferredList(dl, fireOnOneErrback=True)
-        d.addCallback(lambda ign: log.flushErrors(TestRuntimeError, TestValueError))
+        d.addCallback(lambda ign: self.flushLoggedErrors())
         return d
 
 

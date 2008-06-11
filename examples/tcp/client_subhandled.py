@@ -5,12 +5,7 @@ sys.path.insert(0, os.getcwd())
 from twisted.internet import reactor
 from twisted.internet import defer
 
-try:
-    from adytum.twisted.jsonrpc import Proxy
-except ImportError:
-    from pkg_resources import require
-    require('Twisted-JSONRPC')
-    from adytum.twisted.jsonrpc import Proxy
+from txjsonrpc.netstring.jsonrpc import Proxy
 
 def printValue(value):
     print "Result: %s" % str(value)

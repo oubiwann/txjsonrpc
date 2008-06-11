@@ -1,30 +1,35 @@
-import ez_setup
-ez_setup.use_setuptools()
-from setuptools import setup
+import os
+
+try:
+    from setuptools import setup, Extension
+except ImportError:
+    from distutils.core import setup, Extension
 
 version = open('VERSION').read().strip()
 
-setup(name="Twisted-JSONRPC",
+def find_packages(top):
+    # implement a simple find_packages so we don't have to depend on
+    # setuptools
+    packages = []
+    for directory, subdirectories, files in os.walk(top):
+        if '__init__.py' in files:
+            packages.append(directory.replace(os.sep, '.'))
+    return packages
+
+setup(name="txJSON-RPC",
     version=version,
-    description="Twisted JSON-RPC servers and clients.",
+    description="Code for creating Twisted JSON-RPC servers and clients.",
     author="Duncan McGreggor",
     author_email="duncan@adytum.us",
-    url="http://projects.adytum.us/tracs/JSON-RPC",
-    license="BSD",
+    url="http://launchpad.net/txjsonrpc",
+    license="MIT",
     long_description='''
-        Twisted JSON-RPC servers and clients.
+        Code for creatig Twisted JSON-RPC servers and clients.
         ''',
-    packages=[
-        'adytum',
-        'adytum.twisted',
-        'adytum.twisted.protocols',
-        'adytum.twisted.web',
-        'adytum.twisted.web2',
-    ],
-    package_dir = {
-        'adytum': 'adytum',
+    packages=find_packages('txjsonrpc'),
+    package_dir={
+        'txjsonrpc': 'txjsonrpc',
     },
-    namespace_packages = ['adytum', 'adytum.twisted'],
     classifiers = [f.strip() for f in """
     """.splitlines() if f.strip()],
 

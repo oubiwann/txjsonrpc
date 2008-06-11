@@ -30,7 +30,7 @@ from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 from twisted.web import http
 
-from adytum import jsonrpclib
+from txjsonrpc import jsonrpclib
 
 class Handler:
     """Handle a JSON-RPC request and store the state for a request in progress.

@@ -8,6 +8,15 @@
 * Tweaked the commit script.
 * Added license.
 * Removed ez_setup.py.
+* Updated TODO.
+* Renamed the main package from adytum to txjsonrpc.
+* Updated setup.py.
+* Removed ez_setup support.
+* Removed setuptools support.
+* Changed to the new way of flushing logs in twisted.trial.
+* Adjusted tests to use the new package and subpackage names.
+* Adjusted examples to use the new package and subpackage names.
+* Incremented the version number.
 
 2006.05.07
 

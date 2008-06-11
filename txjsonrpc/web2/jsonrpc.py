@@ -20,7 +20,7 @@ from twisted.web2 import responsecode, http, http_headers
 from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 
-from adytum import jsonrpclib
+from txjsonrpc import jsonrpclib
 
 class JSONRPC(resource.Resource):
     """A resource that implements JSON-RPC.

@@ -17,6 +17,7 @@
 * Adjusted tests to use the new package and subpackage names.
 * Adjusted examples to use the new package and subpackage names.
 * Incremented the version number.
+* Removed trial path hack from commit.sh.
 
 2006.05.07
 

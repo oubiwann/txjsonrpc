@@ -38,7 +38,7 @@
 #
 LIB=./adytum/
 SVN=svn+https://twisted-jsonrpc.googlecode.com/svn/trunk
-BZR=lp:~oubiwann/txjsonrpc/google-bzr-svn
+BZR='lp:~oubiwann/txjsonrpc/google-bzr-svn'
 FLAG='skip_tests'
 MSG=commit-msg
 export PYTHONPATH=.:./test
@@ -88,7 +88,7 @@ if [[ "$1" == "$FLAG" ]];then
 else
     # send the output (stdout and stderr) to both a file for checking and
     # stdout for immediate viewing/feedback purposes
-    trial $LIB 2>&1|tee test.out
+    /home/oubiwann/lab/Twisted/trunk/bin/trial $LIB 2>&1|tee test.out
 fi
 STATUS=`tail -1 test.out|grep 'FAIL'`
 if [[ "$STATUS" == '' ]];then

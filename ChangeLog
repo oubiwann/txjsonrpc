@@ -3,6 +3,8 @@
 * Updated the commit script to work with bzr-svn.
 * Added a path hack to commit.sh for running trial.
 * Renamed adytum to txjsonrpc.
+* Moved web and web2 up and renamed twisted to netstring.
+* Removed .pyc files.
 
 2006.05.07
 

@@ -6,6 +6,7 @@
 * Moved web and web2 up and renamed twisted to netstring.
 * Removed .pyc files.
 * Tweaked the commit script.
+* Added license.
 
 2006.05.07
 

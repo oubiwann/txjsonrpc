@@ -22,7 +22,7 @@ from twisted.protocols import basic
 from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 
-from adytum import jsonrpclib
+from txjsonrpc import jsonrpclib
 
 class JSONRPC(basic.NetstringReceiver):
     """A protocol that implements JSON-RPC.

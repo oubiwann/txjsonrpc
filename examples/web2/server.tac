@@ -2,12 +2,7 @@ from twisted.web2 import server
 from twisted.web2.channel import http
 from twisted.application import service, internet
 
-try:
-    from adytum.twisted.web2 import jsonrpc
-except ImportError:
-    from pkg_resources import require
-    require('Twisted-JSONRPC')
-    from adytum.twisted.web2 import jsonrpc
+from txjsonrpc.web2 import jsonrpc
 
 class Example(jsonrpc.JSONRPC):
     """An example object to be published."""

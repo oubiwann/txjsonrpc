@@ -7,7 +7,6 @@ import xmlrpclib
 import simplejson
 
 # From xmlrpclib
-# From xmlrpclib
 SERVER_ERROR          = xmlrpclib.SERVER_ERROR
 NOT_WELLFORMED_ERROR  = xmlrpclib.NOT_WELLFORMED_ERROR
 UNSUPPORTED_ENCODING  = xmlrpclib.UNSUPPORTED_ENCODING
@@ -21,15 +20,15 @@ Fault                 = xmlrpclib.Fault
 METHOD_NOT_CALLABLE   = -32604
 
 class NoSuchFunction(Fault):
-    """There is no function by the given name."""
-    pass
+    """
+    There is no function by the given name.
+    """
 
 def dumps(obj, **kws):
     if isinstance(obj, Exception):
         obj = {'fault': obj.__class__.__name__,
             'faultCode': obj.faultCode,
             'faultString': obj.faultString}
-    #print "In dumps(), obj = %s" % obj
     return simplejson.dumps(obj, **kws)
 
 def loads(string, **kws):
@@ -40,7 +39,7 @@ def loads(string, **kws):
             unmarshalled['faultString'])
     return unmarshalled
 
-class BogusParser(object):
+class SimpleParser(object):
 
     def feed(self, data):
         self.data = loads(data)
@@ -48,7 +47,7 @@ class BogusParser(object):
     def close(self):
         pass
 
-class BogusUnmarshaller(object):
+class SimpleUnmarshaller(object):
 
     def getmethodname(self):
         return self.parser.data.get("method")
@@ -57,8 +56,8 @@ class BogusUnmarshaller(object):
         return self.parser.data.get("params")
 
 def getparser():
-    parser = BogusParser()
-    marshaller = BogusUnmarshaller()
+    parser = SimpleParser()
+    marshaller = SimpleUnmarshaller()
     marshaller.parser = parser
     return parser, marshaller
 

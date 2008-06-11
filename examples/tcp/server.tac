@@ -1,11 +1,6 @@
 from twisted.application import service, internet
 
-try:
-    from adytum.twisted import jsonrpc
-except ImportError:
-    from pkg_resources import require
-    require('Twisted-JSONRPC')
-    from adytum.twisted import jsonrpc
+from txjsonrpc.netstring import jsonrpc
 
 class Example(jsonrpc.JSONRPC):
     """An example object to be published."""

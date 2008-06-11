@@ -36,7 +36,7 @@
 # Which can be removed with the following:
 #   for PROP in `svn proplist|grep bzr`; do svn propdel $PROP; done
 #
-LIB=./adytum/
+LIB=./txjsonrpc/
 SVN=svn+https://twisted-jsonrpc.googlecode.com/svn/trunk
 BZR='lp:~oubiwann/txjsonrpc/google-bzr-svn'
 FLAG='skip_tests'

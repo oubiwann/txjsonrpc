@@ -12,11 +12,11 @@ from twisted.trial import unittest
 from twisted.internet import reactor, defer
 from twisted.python import log
 
-from adytum import jsonrpclib
-from adytum.twisted import jsonrpc
-from adytum.twisted.jsonrpc import Proxy
-from adytum.twisted.jsonrpc import JSONRPC
-from adytum.twisted.jsonrpc import addIntrospection
+from txjsonrpc import jsonrpclib
+from txjsonrpc.netstring import jsonrpc
+from txjsonrpc.netstring.jsonrpc import Proxy
+from txjsonrpc.netstring.jsonrpc import JSONRPC
+from txjsonrpc.netstring.jsonrpc import addIntrospection
 
 class TestRuntimeError(RuntimeError):
     pass
@@ -125,7 +125,7 @@ class JSONRPCTestCase(unittest.TestCase):
             d.addCallback(lambda exc, code=code: self.assertEquals(exc.faultCode, code))
             dl.append(d)
         d = defer.DeferredList(dl, fireOnOneErrback=True)
-        d.addCallback(lambda ign: log.flushErrors(TestRuntimeError, TestValueError))
+        d.addCallback(lambda ign: self.flushLoggedErrors())
         return d
 
 class JSONRPCTestIntrospection(JSONRPCTestCase):

@@ -15,3 +15,7 @@ jsonrpclib
 
 * return results in simpljson dicts with possible keeys of "result" or "error"
 * use simplesjon's hook for creating appropriate JS objects from hints in the results
+
+tests
+=====
+* 

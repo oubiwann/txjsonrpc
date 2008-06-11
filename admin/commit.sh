@@ -38,7 +38,7 @@
 #
 LIB=./txjsonrpc/
 SVN=svn+https://twisted-jsonrpc.googlecode.com/svn/trunk
-BZR='lp:~oubiwann/txjsonrpc/main'
+BZR=lp:txjsonrpc
 FLAG='skip_tests'
 MSG=commit-msg
 export PYTHONPATH=.:./test

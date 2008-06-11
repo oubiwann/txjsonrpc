@@ -18,6 +18,8 @@
 * Adjusted examples to use the new package and subpackage names.
 * Incremented the version number.
 * Removed trial path hack from commit.sh.
+* Test commit to svn and bzr from a freshly checked out branch.
+* Cool! It worked. Removed testfile.
 
 2006.05.07
 

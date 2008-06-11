@@ -1,1 +1,7 @@
-svn stat|egrep -v '.swp|.pyc|lib/os|lib/net'
+echo
+echo "Summary:"
+bzr stat -S
+echo
+echo "Breakdown:"
+bzr stat
+echo

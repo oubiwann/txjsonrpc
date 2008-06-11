@@ -22,6 +22,7 @@
 * Cool! It worked. Removed testfile.
 * Changed the commit script to point to 'main' on launchpad.
 * One more change to the launchpad destination in the commit script.
+* Updated the stat script to use bzr instead of svn.
 
 2006.05.07
 

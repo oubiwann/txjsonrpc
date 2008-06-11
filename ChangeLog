@@ -21,6 +21,7 @@
 * Test commit to svn and bzr from a freshly checked out branch.
 * Cool! It worked. Removed testfile.
 * Changed the commit script to point to 'main' on launchpad.
+* One more change to the launchpad destination in the commit script.
 
 2006.05.07
 

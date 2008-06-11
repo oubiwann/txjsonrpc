@@ -20,6 +20,7 @@
 * Removed trial path hack from commit.sh.
 * Test commit to svn and bzr from a freshly checked out branch.
 * Cool! It worked. Removed testfile.
+* Changed the commit script to point to 'main' on launchpad.
 
 2006.05.07
 

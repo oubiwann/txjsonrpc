@@ -58,18 +58,22 @@ function localCommit {
     bzr commit --local --file $MSG
 }
 
+function pushSucceed {
+    echo "Push succeeded."
+}
+
 function pushGoogleCode {
     echo "Pushing to Subversion now ..."
-    bzr svn-push $SVN
+    bzr svn-push $SVN && pushSucceed
 }
 
 function pushLaunchpad {
     echo "Pushing to Launchpad now ..."
-    bzr push $BZR
+    bzr push $BZR && pushSucceed
 }
 
 function cleanup {
-    echo "Push succeeded. Cleaning up temporary files ..."
+    echo "Cleaning up temporary files ..."
     rm $MSG
     rm -rf _trial_temp
     rm test.out

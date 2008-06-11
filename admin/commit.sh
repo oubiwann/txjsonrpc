@@ -92,7 +92,7 @@ if [[ "$1" == "$FLAG" ]];then
 else
     # send the output (stdout and stderr) to both a file for checking and
     # stdout for immediate viewing/feedback purposes
-    /home/oubiwann/lab/Twisted/trunk/bin/trial $LIB 2>&1|tee test.out
+    trial $LIB 2>&1|tee test.out
 fi
 STATUS=`tail -1 test.out|grep 'FAIL'`
 if [[ "$STATUS" == '' ]];then

@@ -32,6 +32,17 @@ from twisted.web import http
 
 from txjsonrpc import jsonrpclib
 
+# Useful so people don't need to import xmlrpclib directly
+Fault = xmlrpclib.Fault
+Binary = xmlrpclib.Binary
+Boolean = xmlrpclib.Boolean
+DateTime = xmlrpclib.DateTime
+
+class NoSuchFunction(Fault):
+    """
+    There is no function by the given name.
+    """
+
 class Handler:
     """Handle a JSON-RPC request and store the state for a request in progress.
 

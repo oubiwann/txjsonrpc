@@ -4,6 +4,9 @@
 * Updated SimpleParser to properly return results when using jsonrpclib
 (synchronous, blocking code).
 * Added Transport and ServerProxy.
+* Added web example (in addition to the already-extant web2 example).
+* Removed extraneous print/debug code.
+* Incremented version number.
 
 2008.06.14
 

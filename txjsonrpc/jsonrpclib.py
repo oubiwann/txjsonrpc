@@ -44,7 +44,6 @@ def loads(string, **kws):
 class SimpleParser(object):
 
     def feed(self, data):
-        print data
         self.data = loads(data)
 
     def close(self):

@@ -1,3 +1,10 @@
+2008.06.15
+
+* Added Fault class.
+* Updated SimpleParser to properly return results when using jsonrpclib
+(synchronous, blocking code).
+* Added Transport and ServerProxy.
+
 2008.06.14
 
 * Removed extraneous while space.

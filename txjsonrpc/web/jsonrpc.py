@@ -6,7 +6,7 @@
 
 """A generic resource for publishing objects via JSON-RPC.
 
-Requires simplejson; can be downloaded from 
+Requires simplejson; can be downloaded from
 http://cheeseshop.python.org/pypi/simplejson
 
 API Stability: unstable
@@ -52,7 +52,7 @@ class Handler:
         self.resource = resource # the JSON-RPC resource we are connected to
         self.result = defer.Deferred()
         self.run(*args)
-    
+
     def run(self, *args):
         # event driven equivalent of 'raise UnimplementedError'
         self.result.errback(NotImplementedError("Implement run() in subclasses"))
@@ -60,7 +60,7 @@ class Handler:
 
 class JSONRPC(resource.Resource):
     """A resource that implements JSON-RPC.
-    
+
     Methods published can return JSON-RPC serializable results, Faults,
     Binary, Boolean, DateTime, Deferreds, or Handler instances.
 
@@ -147,17 +147,17 @@ class JSONRPC(resource.Resource):
         if functionPath.find(self.separator) != -1:
             prefix, functionPath = functionPath.split(self.separator, 1)
             handler = self.getSubHandler(prefix)
-            if handler is None: 
-                raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND, 
+            if handler is None:
+                raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND,
                     "no such sub-handler %s" % prefix)
             return handler._getFunction(functionPath)
 
         f = getattr(self, "jsonrpc_%s" % functionPath, None)
         if not f:
-            raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND, 
+            raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND,
                 "function %s not found" % functionPath)
         elif not callable(f):
-            raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_CALLABLE, 
+            raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_CALLABLE,
                 "function %s not callable" % functionPath)
         else:
             return f
@@ -267,7 +267,7 @@ class QueryFactory(protocol.ClientFactory):
         # pass the method name and JSON-RPC args (converted from python)
         # into the template
         self.payload = jsonrpclib.dumps({
-            'method':method, 
+            'method':method,
             'params':args})
         self.deferred = defer.Deferred()
 

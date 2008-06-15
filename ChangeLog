@@ -1,3 +1,7 @@
+2008.06.14
+
+* Removed extraneous while space.
+
 2008.06.11
 
 * Updated the commit script to work with bzr-svn.

@@ -16,7 +16,7 @@ import urlparse
 
 # Sibling Imports
 from twisted.web2 import resource, stream
-from twisted.web2 import responsecode, http, http_headers 
+from twisted.web2 import responsecode, http, http_headers
 from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 
@@ -24,7 +24,7 @@ from txjsonrpc import jsonrpclib
 
 class JSONRPC(resource.Resource):
     """A resource that implements JSON-RPC.
-    
+
     You probably want to connect this to '/RPC2'.
 
     Methods published can return JSON-RPC serializable results, Faults,
@@ -61,11 +61,11 @@ class JSONRPC(resource.Resource):
         # For GET/HEAD: Return an error message
         s=("<html><head><title>JSON-RPC responder</title></head>"
            "<body><h1>JSON-RPC responder</h1>POST your JSON-RPC here.</body></html>")
-        
-        return http.Response(responsecode.OK, 
+
+        return http.Response(responsecode.OK,
             {'content-type': http_headers.MimeType('text', 'html')},
             s)
-    
+
     def http_POST(self, request):
         parser, unmarshaller = jsonrpclib.getparser()
         deferred = stream.readStream(request.stream, parser.feed)
@@ -90,7 +90,7 @@ class JSONRPC(resource.Resource):
         except:
             f = jsonrpclib.Fault(self.FAILURE, "can't serialize output")
             s = jsonrpclib.dumps(f)
-        return http.Response(responsecode.OK, 
+        return http.Response(responsecode.OK,
             {'content-type': http_headers.MimeType('text', 'json')},
             s)
 
@@ -116,16 +116,16 @@ class JSONRPC(resource.Resource):
             prefix, functionPath = functionPath.split(self.separator, 1)
             handler = self.getSubHandler(prefix)
             if handler is None:
-                raise jsonrpclib.NoSuchFunction(self.NOT_FOUND, 
+                raise jsonrpclib.NoSuchFunction(self.NOT_FOUND,
                     "no such subHandler %s" % prefix)
             return handler.getFunction(functionPath)
 
         f = getattr(self, "jsonrpc_%s" % functionPath, None)
         if not f:
-            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND, 
+            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND,
                 "function %s not found" % functionPath)
         elif not callable(f):
-            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND, 
+            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND,
                 "function %s not callable" % functionPath)
         else:
             return f

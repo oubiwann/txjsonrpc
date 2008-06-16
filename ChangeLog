@@ -7,6 +7,7 @@
 * Added web example (in addition to the already-extant web2 example).
 * Removed extraneous print/debug code.
 * Incremented version number.
+* Added missing NOT_FOUND to web.jsonrpc.
 
 2008.06.14
 

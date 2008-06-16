@@ -84,6 +84,7 @@ class JSONRPC(resource.Resource):
 
     # Error codes for Twisted, if they conflict with yours then
     # modify them at runtime.
+    NOT_FOUND = 8001
     FAILURE = 8002
 
     isLeaf = 1

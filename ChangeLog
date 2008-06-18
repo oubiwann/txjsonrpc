@@ -8,6 +8,7 @@
 * Removed extraneous print/debug code.
 * Incremented version number.
 * Added missing NOT_FOUND to web.jsonrpc.
+* Updated the version number.
 
 2008.06.14
 

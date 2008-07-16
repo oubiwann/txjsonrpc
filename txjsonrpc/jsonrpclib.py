@@ -43,11 +43,13 @@ def loads(string, **kws):
 
 class SimpleParser(object):
 
+    buffer = ''
+
     def feed(self, data):
-        self.data = loads(data)
+        self.buffer += data
 
     def close(self):
-        pass
+        self.data = loads(self.buffer)
 
 class SimpleUnmarshaller(object):
 

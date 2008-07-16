@@ -1,3 +1,10 @@
+2008.07.16
+
+* Applied a patch from Moshe Zadka: "When getting a long reply, the client
+library, using code from xmlrpclib, will attempt to call feed multiple times
+with partial messages. The supplied parser assumes feed will only be called
+with a complete message."
+
 2008.06.15
 
 * Added Fault class.

@@ -67,6 +67,9 @@ class Test(JSONRPC):
     def jsonrpc_dict(self, map, key):
         return map[key]
 
+    def jsonrpc_none(self):
+        return "null"
+
     def _getFunction(self, functionPath):
         try:
             return JSONRPC._getFunction(self, functionPath)
@@ -107,12 +110,13 @@ class JSONRPCTestCase(unittest.TestCase):
     def proxy(self):
         return jsonrpc.Proxy("http://127.0.0.1:%d/" % self.port)
 
-    def testResults(self):
+    def test_Results(self):
         inputOutput = [
             ("add", (2, 3), 5),
             ("defer", ("a",), "a"),
             ("dict", ({"a": 1}, "a"), 1),
             ("pair", ("a", 1), ["a", 1]),
+            ("none", (), "null"),
             ("complex", (), {"a": ["b", "c", 12, []], "D": "foo"})]
 
         dl = []

@@ -33,13 +33,13 @@ function checkBuild {
     echo
     echo "Checking build process ..."
     echo
-    sudo python setup.py build
+    python setup.py build
 }
 
 function cleanup {
     echo "Cleaning up temporary files ..."
-    find . -name "*pyc" -exec sudo rm {} \;
-    sudo rm -rf $MSG \
+    find . -name "*pyc" -exec rm {} \;
+    rm -rf $MSG \
         build \
         dist \
         _trial_temp \

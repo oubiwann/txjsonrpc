@@ -10,6 +10,7 @@ clean function).
 * Made the error function take a message parameter.
 * Updated the bzr push command for svn.
 * Fixed failing test for new "none" check.
+* Removed sudo calls from admin scripts.
 
 2008.07.18
 

@@ -3,8 +3,10 @@ Requires simplejson; can be downloaded from
 http://cheeseshop.python.org/pypi/simplejson
 """
 import xmlrpclib
+from datetime import datetime
 
 import simplejson
+
 
 # From xmlrpclib
 SERVER_ERROR          = xmlrpclib.SERVER_ERROR
@@ -18,20 +20,33 @@ INTERNAL_ERROR        = xmlrpclib.INTERNAL_ERROR
 # Custom errors
 METHOD_NOT_CALLABLE   = -32604
 
+
 class Fault(xmlrpclib.Fault):
     pass
+
 
 class NoSuchFunction(Fault):
     """
     There is no function by the given name.
     """
 
+class JSONRPCEncoder(simplejson.JSONEncoder):
+    """
+    Provide custom serializers for JSON-RPC.
+    """
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.strftime("%Y%m%dT%H:%M:%S")
+        raise TypeError("%r is not JSON serializable" % (obj,))
+
+
 def dumps(obj, **kws):
     if isinstance(obj, Exception):
         obj = {'fault': obj.__class__.__name__,
             'faultCode': obj.faultCode,
             'faultString': obj.faultString}
-    return simplejson.dumps(obj, **kws)
+    return simplejson.dumps(obj, cls=JSONRPCEncoder, **kws)
+
 
 def loads(string, **kws):
     unmarshalled = simplejson.loads(string, **kws)
@@ -40,6 +55,7 @@ def loads(string, **kws):
         raise Fault(unmarshalled['faultCode'],
             unmarshalled['faultString'])
     return unmarshalled
+
 
 class SimpleParser(object):
 
@@ -51,6 +67,7 @@ class SimpleParser(object):
     def close(self):
         self.data = loads(self.buffer)
 
+
 class SimpleUnmarshaller(object):
 
     def getmethodname(self):
@@ -61,11 +78,13 @@ class SimpleUnmarshaller(object):
             return self.parser.data.get("params")
         return self.parser.data
 
+
 def getparser():
     parser = SimpleParser()
     marshaller = SimpleUnmarshaller()
     marshaller.parser = parser
     return parser, marshaller
+
 
 class Transport(xmlrpclib.Transport):
     """
@@ -78,6 +97,7 @@ class Transport(xmlrpclib.Transport):
         Get Parser and unmarshaller.
         """
         return getparser()
+
 
 class ServerProxy(xmlrpclib.ServerProxy):
     """

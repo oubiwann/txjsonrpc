@@ -1,11 +1,11 @@
 import os
 
+from txjsonrpc import meta
+
 try:
     from setuptools import setup, Extension
 except ImportError:
     from distutils.core import setup, Extension
-
-version = open('VERSION').read().strip()
 
 def find_packages(top):
     # implement a simple find_packages so we don't have to depend on
@@ -17,7 +17,7 @@ def find_packages(top):
     return packages
 
 setup(name="txJSON-RPC",
-    version=version,
+    version=meta.version,
     description="Code for creating Twisted JSON-RPC servers and clients.",
     author="Duncan McGreggor",
     author_email="duncan@adytum.us",

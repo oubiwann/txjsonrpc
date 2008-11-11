@@ -14,6 +14,7 @@ clean function).
 * Fixed failing test for new "none" check.
 * Removed sudo calls from admin scripts.
 * Updated the ChangeLog with missing notes from earlier today.
+* Moved version info into meta package file.
 
 2008.07.18
 

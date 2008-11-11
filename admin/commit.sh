@@ -18,13 +18,13 @@ if [[ "$STATUS" == '' ]];then
     else
         echo "All tests passed."
     fi
-    ./admin/checkBuild.sh || error
+    checkBuild || error " ERROR: checkBuild failed"
     if [[ "$1" == "skip_svn" ]]; then
         echo "Skipping commit to $SVN ..."
     else
-        pushGoogleCode || error
+        pushGoogleCode || error " ERROR: pushGoogleCode failed"
     fi
-    localCommit && cleanup || error
+    localCommit && cleanup || error "ERROR: localCommit failed"
 else
     abort
 fi

@@ -21,13 +21,32 @@ function abort {
 }
 
 function error {
-    echo "There was an error committing/pushing; temp files preserved."
+    MSG=$1
+    echo $MSG
+    echo '(Temp files preserved.)'
     abort
+}
+
+function checkBuild {
+    # this script is used to automatically check the build and make sure nothing
+    # in the build process was broken before a checkin.
+    echo
+    echo "Checking build process ..."
+    echo
+    sudo python setup.py build
 }
 
 function cleanup {
     echo "Cleaning up temporary files ..."
-    rm -rf $MSG _trial_temp test.out .DS_Store CHECK_THIS_BEFORE_UPLOAD.txt
+    find . -name "*pyc" -exec sudo rm {} \;
+    sudo rm -rf $MSG \
+        build \
+        dist \
+        _trial_temp \
+        test.out \
+        .DS_Store \
+        CHECK_THIS_BEFORE_UPLOAD.txt \
+        $EGG_NAME.egg-info
     echo "Done."
 }
 
@@ -48,13 +67,5 @@ function pushLaunchpad {
 
 function pushGoogleCode {
     echo "Pushing to Subversion (Google) now ..."
-    bzr svn-push $SVN && pushSucceed
-}
-
-function buildSucceed {
-    echo "Build succeeded."
-    echo "Cleaning up files ..."
-    ./admin/clean.sh
-    echo "Done."
-    echo
+    bzr push $SVN && pushSucceed
 }

@@ -1,3 +1,15 @@
+2008.11.10
+
+* Updated the version.
+* Updated the commitAndPush script to pass the skip_tests parameter (and fixed
+its filename extention).
+* Added missing sudo to cleanup function.
+* Removed unused clean script (and made sure that the other scripts use the
+clean function).
+* Converted checkBuild to function and removed script.
+* Made the error function take a message parameter.
+* Updated the bzr push command for svn.
+
 2008.07.18
 
 * Added more admin scripts.

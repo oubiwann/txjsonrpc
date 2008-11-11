@@ -1,5 +1,7 @@
 2008.11.10
 
+* Added a test for None/null.
+* Added a serializer for Python datetime -> JSON.
 * Updated the version.
 * Updated the commitAndPush script to pass the skip_tests parameter (and fixed
 its filename extention).
@@ -11,6 +13,7 @@ clean function).
 * Updated the bzr push command for svn.
 * Fixed failing test for new "none" check.
 * Removed sudo calls from admin scripts.
+* Updated the ChangeLog with missing notes from earlier today.
 
 2008.07.18
 

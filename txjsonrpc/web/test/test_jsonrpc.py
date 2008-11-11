@@ -193,7 +193,7 @@ class JSONRPCTestIntrospection(JSONRPCTestCase):
                 meths,
                 ['add', 'complex', 'defer', 'deferFail',
                  'deferFault', 'dict', 'fail', 'fault',
-                 'pair', 'system.listMethods',
+                 'none', 'pair', 'system.listMethods',
                  'system.methodHelp',
                  'system.methodSignature'])
 

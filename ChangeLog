@@ -9,6 +9,7 @@ clean function).
 * Converted checkBuild to function and removed script.
 * Made the error function take a message parameter.
 * Updated the bzr push command for svn.
+* Fixed failing test for new "none" check.
 
 2008.07.18
 

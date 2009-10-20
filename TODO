@@ -1,21 +1,35 @@
+====
+TODO
+====
+
+Known bugs:
+
+ *
+
 twisted.web JSON-RPC
-====================
+--------------------
 
 twisted.web2 JSON-RPC
-=====================
+---------------------
 
 JSON-RPC over TCP
-=================
-* pull out anything that has to do with setting the payload (e.g., method/params dict)
-  and put it in jsonrpclib
-* clean up error checking, now that errors are going in the payload under the "error" key.
+-----------------
+
+* pull out anything that has to do with setting the payload (e.g.,
+  method/params dict) and put it in jsonrpclib
+
+* clean up error checking, now that errors are going in the payload under the
+  "error" key.
 
 jsonrpclib
-==========
+----------
 
 * return results in simpljson dicts with possible keeys of "result" or "error"
-* use simplesjon's hook for creating appropriate JS objects from hints in the results
+
+* use simplesjon's hook for creating appropriate JS objects from hints in the
+  results
 
 tests
-=====
+-----
+
 * 

@@ -1,0 +1,7 @@
+============
+Dependencies
+============
+
+txJSON-RPC currently has the following dependencies:
+
+* Twisted - http://twistedmatrix.com/

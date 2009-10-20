@@ -1,10 +1,7 @@
-# -*- test-case-name: twisted.web.test.test_jsonrpc -*-
-#
 # Copyright (c) 2001-2004 Twisted Matrix Laboratories.
 # See LICENSE for details.
-
-
-"""A generic resource for publishing objects via JSON-RPC.
+"""
+A generic resource for publishing objects via JSON-RPC.
 
 Requires simplejson; can be downloaded from
 http://cheeseshop.python.org/pypi/simplejson
@@ -14,17 +11,9 @@ API Stability: unstable
 Maintainer: U{Duncan McGreggor<mailto:oubiwann@adytum.us>}
 """
 from __future__ import nested_scopes
-
-__version__ = "$Revision: 1.32 $"[11:-2]
-
-# System Imports
 import urlparse
 import xmlrpclib
 
-# JSON Import
-import simplejson
-
-# Sibling Imports
 from twisted.web import resource, server
 from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
@@ -32,19 +21,23 @@ from twisted.web import http
 
 from txjsonrpc import jsonrpclib
 
-# Useful so people don't need to import xmlrpclib directly
+
+# Useful so people don't need to import xmlrpclib directly.
 Fault = xmlrpclib.Fault
 Binary = xmlrpclib.Binary
 Boolean = xmlrpclib.Boolean
 DateTime = xmlrpclib.DateTime
+
 
 class NoSuchFunction(Fault):
     """
     There is no function by the given name.
     """
 
+
 class Handler:
-    """Handle a JSON-RPC request and store the state for a request in progress.
+    """
+    Handle a JSON-RPC request and store the state for a request in progress.
 
     Override the run() method and return result using self.result,
     a Deferred.
@@ -70,7 +63,8 @@ class Handler:
 
 
 class JSONRPC(resource.Resource):
-    """A resource that implements JSON-RPC.
+    """
+    A resource that implements JSON-RPC.
 
     Methods published can return JSON-RPC serializable results, Faults,
     Binary, Boolean, DateTime, Deferreds, or Handler instances.
@@ -144,7 +138,8 @@ class JSONRPC(resource.Resource):
         return jsonrpclib.Fault(self.FAILURE, "error")
 
     def _getFunction(self, functionPath):
-        """Given a string, return a function, or raise jsonrpclib.NoSuchFunction.
+        """
+        Given a string, return a function, or raise jsonrpclib.NoSuchFunction.
 
         This returned function will be called, and should return the result
         of the call, a Deferred, or a Fault instance.
@@ -174,12 +169,15 @@ class JSONRPC(resource.Resource):
             return f
 
     def _listFunctions(self):
-        """Return a list of the names of all jsonrpc methods."""
+        """
+        Return a list of the names of all jsonrpc methods.
+        """
         return reflect.prefixedMethodNames(self.__class__, 'jsonrpc_')
 
 
 class JSONRPCIntrospection(JSONRPC):
-    """Implement a JSON-RPC Introspection API.
+    """
+    Implement a JSON-RPC Introspection API.
 
     By default, the methodHelp method returns the 'help' method attribute,
     if it exists, otherwise the __doc__ method attribute, if it exists,
@@ -191,7 +189,8 @@ class JSONRPCIntrospection(JSONRPC):
     """
 
     def __init__(self, parent):
-        """Implement Introspection support for a JSONRPC server.
+        """
+        Implement Introspection support for a JSONRPC server.
 
         @param parent: the JSONRPC server to add Introspection support to.
         """
@@ -218,12 +217,13 @@ class JSONRPCIntrospection(JSONRPC):
         """
         method = self._jsonrpc_parent._getFunction(method)
         return (getattr(method, 'help', None)
-                or getattr(method, '__doc__', None) or '')
+                or getattr(method, '__doc__', None) or '').strip()
 
     jsonrpc_methodHelp.signature = [['string', 'string']]
 
     def jsonrpc_methodSignature(self, method):
-        """Return a list of type signatures.
+        """
+        Return a list of type signatures.
 
         Each type signature is a list of the form [rtype, type1, type2, ...]
         where rtype is the return type and typeN is the type of the Nth
@@ -236,8 +236,10 @@ class JSONRPCIntrospection(JSONRPC):
     jsonrpc_methodSignature.signature = [['array', 'string'],
                                         ['string', 'string']]
 
+
 def addIntrospection(jsonrpc):
-    """Add Introspection support to an JSONRPC server.
+    """
+    Add Introspection support to an JSONRPC server.
 
     @param jsonrpc: The jsonrpc server to add Introspection support to.
     """
@@ -316,13 +318,13 @@ class QueryFactory(protocol.ClientFactory):
 
 
 class Proxy:
-    """A Proxy for making remote JSON-RPC calls.
+    """
+    A Proxy for making remote JSON-RPC calls.
 
     Pass the URL of the remote JSON-RPC server to the constructor.
 
     Use proxy.callRemote('foobar', *args) to call remote method
     'foobar' with *args.
-
     """
 
     def __init__(self, url, user=None, password=None):

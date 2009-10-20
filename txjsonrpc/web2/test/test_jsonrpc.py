@@ -1,17 +1,12 @@
-# -*- test-case-name: twisted.web.test.test_jsonrpc -*-
-#
 # Copyright (c) 2001-2004 Twisted Matrix Laboratories.
 # See LICENSE for details.
-
-# 
-
-"""Test XML-RPC support."""
-
+"""
+Test XML-RPC support.
+"""
+from twisted.internet import reactor, defer
+from twisted.trial import unittest
 from twisted.web2 import server
 from twisted.web2.channel import http
-from twisted.trial import unittest
-from twisted.internet import reactor, defer
-from twisted.python import log
 
 try:
     from txjsonrpc.web.jsonrpc import Proxy
@@ -19,16 +14,16 @@ except ImportError:
     Proxy = None
 
 from txjsonrpc import jsonrpclib
-from txjsonrpc.web2 import jsonrpc
 from txjsonrpc.web2.jsonrpc import JSONRPC, addIntrospection
 
-import time
 
 class TestRuntimeError(RuntimeError):
     pass
 
+
 class TestValueError(ValueError):
     pass
+
 
 class Test(JSONRPC):
 
@@ -36,33 +31,39 @@ class Test(JSONRPC):
     NOT_FOUND = 23
     SESSION_EXPIRED = 42
 
-    addSlash = True # cause it's at the root
+    addSlash = True
     
-    # the doc string is part of the test
     def jsonrpc_add(self, request, a, b):
-        """This function add two numbers."""
+        """
+        This function add two numbers.
+        """
+        # The doc string is part of the test.
         return a + b
 
     jsonrpc_add.signature = [['int', 'int', 'int'],
                             ['double', 'double', 'double']]
 
-    # the doc string is part of the test
     def jsonrpc_pair(self, request, string, num):
-        """This function puts the two arguments in an array."""
+        """
+        This function puts the two arguments in an array.
+        """
+        # The doc string is part of the test.
         return [string, num]
 
     jsonrpc_pair.signature = [['array', 'string', 'int']]
 
-    # the doc string is part of the test
     def jsonrpc_defer(self, request, x):
-        """Help for defer."""
+        """
+        Help for defer.
+        """
+        # The doc string is part of the test.
         return defer.succeed(x)
 
     def jsonrpc_deferFail(self, request):
         return defer.fail(TestValueError())
 
-    # don't add a doc string, it's part of the test
     def jsonrpc_fail(self, request):
+        # Don't add a doc string, it's part of the test.
         raise TestRuntimeError
 
     def jsonrpc_fault(self, request):
@@ -144,9 +145,10 @@ class JSONRPCTestCase2(JSONRPCTestCase):
 class JSONRPCTestIntrospection(JSONRPCTestCase):
 
     def setUp(self):
-        jsonrpc = Test()
-        addIntrospection(jsonrpc)
-        self.p = reactor.listenTCP(0, http.HTTPFactory(server.Site(jsonrpc)),
+        jsonrpcService = Test()
+        addIntrospection(jsonrpcService)
+        self.p = reactor.listenTCP(
+            0, http.HTTPFactory(server.Site(jsonrpcService)),
             interface="127.0.0.1")
         self.port = self.p.getHost().port
 
@@ -192,4 +194,3 @@ class JSONRPCTestIntrospection(JSONRPCTestCase):
             d.addCallback(self.assertEquals, expected)
             dl.append(d)
         return defer.DeferredList(dl, fireOnOneErrback=True)
-

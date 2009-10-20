@@ -11,6 +11,8 @@ txJSON-RPC 0.3.0
 * Updated Netstring JSON-RPC code to allow for setting the MAX_LENGTH
   attribute.
 
+* Improved documentation.
+
 txJSON-RPC 0.2.0
 ----------------
 

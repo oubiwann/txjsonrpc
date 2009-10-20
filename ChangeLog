@@ -13,6 +13,7 @@
 * Added a maxLength attribute to QueryFactory for custom settings by users.
 * Updated proxy to instantiate QueryFactory with an optional maxLength
 override.
+* Updated history file.
 
 2008.11.10
 

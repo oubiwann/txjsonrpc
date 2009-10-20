@@ -1,0 +1,21 @@
+=====
+Usage
+=====
+
+
+Examples
+--------
+
+In the top-level source directory for txJSON-RPC, there is an examples
+directory.  This contains the following:
+
+* Client and server examples for twiste.web-based JSON-RPC.
+
+* Client and server examples for twiste.web2-based JSON-RPC.
+
+* Client and server examples for Netstring TCP JSON-RPC as well as code shoing
+  how to use subhandlers for the TCP code, since this is different than the
+  XML-RPC/JSON-RPC HTTP-based subhandlers.
+
+Examining each of the Python files in the example directories is the best way
+to get a sense of how to use txJSON-RPC.

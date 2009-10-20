@@ -1,3 +1,13 @@
+2009.11.20
+
+* Added clean.sh admin script.
+* Cleaned up TODO file.
+* Updated meta file with more data and incremented the version to 0.3.
+* Added utils subpackage.
+* Updated setup.py to use the new utils subpackage.
+* Added docs.
+* Updated README.
+
 2008.11.10
 
 * Added a test for None/null.

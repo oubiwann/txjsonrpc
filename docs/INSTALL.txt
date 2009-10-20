@@ -1,0 +1,48 @@
+============
+Installation
+============
+
+Development
+-----------
+
+If you want to develop for txJSON-RPC or use the latest code we're working on,
+you can install from the sources. You'll need bzr installed, and then just do
+the following::
+
+    $ bzr branch lp:txjsonrpc
+    $ cd txjsonrpc
+    $ sudo python setup.py install
+
+
+Easy Install
+------------
+
+You can use the setuptools easy_install script to get txSpore on your system::
+
+    $ sudo easy_install txJSON-RPC
+
+
+Manual Download
+---------------
+
+You can manually download the source tarball from the Python Package Index by
+visiting the following URL:
+
+    http://pypi.python.org/pypi/txJSON-RPC/
+
+You'll need to untar and gunzip the source, cd into the source directory, and
+then you can do the usual::
+
+    $ sudo python setup.py install
+
+
+Checking the Source
+-------------------
+
+Once installed, you can test the source code by executing this from the
+top-level source directory::
+
+    $ trial txjsonrpc
+
+That will run the test suite and report on the success and failure of any unit
+tests.

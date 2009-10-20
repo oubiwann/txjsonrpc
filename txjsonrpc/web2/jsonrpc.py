@@ -1,29 +1,22 @@
-# -*- test-case-name: twisted.web2.test.test_jsonrpc -*-
-#
 # Copyright (c) 2001-2004 Twisted Matrix Laboratories.
 # See LICENSE for details.
-
-
-"""A generic resource for publishing objects via JSON-RPC.
+"""
+A generic resource for publishing objects via JSON-RPC.
 
 API Stability: semi-stable
 
 Maintainer: U{Duncan McGreggor <mailto:oubiwann@adytum.us>}
 """
-
-# System Imports
-import urlparse
-
-# Sibling Imports
-from twisted.web2 import resource, stream
-from twisted.web2 import responsecode, http, http_headers
-from twisted.internet import defer, protocol, reactor
+from twisted.internet import defer
 from twisted.python import log, reflect
+from twisted.web2 import http, http_headers, resource, responsecode, stream
 
 from txjsonrpc import jsonrpclib
 
+
 class JSONRPC(resource.Resource):
-    """A resource that implements JSON-RPC.
+    """
+    A resource that implements JSON-RPC.
 
     You probably want to connect this to '/RPC2'.
 
@@ -60,7 +53,8 @@ class JSONRPC(resource.Resource):
     def render(self, request):
         # For GET/HEAD: Return an error message
         s=("<html><head><title>JSON-RPC responder</title></head>"
-           "<body><h1>JSON-RPC responder</h1>POST your JSON-RPC here.</body></html>")
+           "<body><h1>JSON-RPC responder</h1>POST your JSON-RPC "
+           "here.</body></html>")
 
         return http.Response(responsecode.OK,
             {'content-type': http_headers.MimeType('text', 'html')},
@@ -101,7 +95,8 @@ class JSONRPC(resource.Resource):
         return jsonrpclib.Fault(self.FAILURE, "error")
 
     def getFunction(self, functionPath):
-        """Given a string, return a function, or raise NoSuchFunction.
+        """
+        Given a string, return a function, or raise NoSuchFunction.
 
         This returned function will be called, and should return the result
         of the call, a Deferred, or a Fault instance.
@@ -131,12 +126,15 @@ class JSONRPC(resource.Resource):
             return f
 
     def _listFunctions(self):
-        """Return a list of the names of all jsonrpc methods."""
+        """
+        Return a list of the names of all jsonrpc methods.
+        """
         return reflect.prefixedMethodNames(self.__class__, 'jsonrpc_')
 
 
 class JSONRPCIntrospection(JSONRPC):
-    """Implement the JSON-RPC Introspection API.
+    """
+    Implement the JSON-RPC Introspection API.
 
     By default, the methodHelp method returns the 'help' method attribute,
     if it exists, otherwise the __doc__ method attribute, if it exists,
@@ -148,7 +146,8 @@ class JSONRPCIntrospection(JSONRPC):
     """
 
     def __init__(self, parent):
-        """Implement Introspection support for an JSONRPC server.
+        """
+        Implement Introspection support for an JSONRPC server.
 
         @param parent: the JSONRPC server to add Introspection support to.
         """
@@ -157,7 +156,9 @@ class JSONRPCIntrospection(JSONRPC):
         self._jsonrpc_parent = parent
 
     def jsonrpc_listMethods(self, request):
-        """Return a list of the method names implemented by this server."""
+        """
+        Return a list of the method names implemented by this server.
+        """
         functions = []
         todo = [(self._jsonrpc_parent, '')]
         while todo:
@@ -171,16 +172,18 @@ class JSONRPCIntrospection(JSONRPC):
     jsonrpc_listMethods.signature = [['array']]
 
     def jsonrpc_methodHelp(self, request, method):
-        """Return a documentation string describing the use of the given method.
+        """
+        Return a documentation string describing the use of the given method.
         """
         method = self._jsonrpc_parent.getFunction(method)
         return (getattr(method, 'help', None)
-                or getattr(method, '__doc__', None) or '')
+                or getattr(method, '__doc__', None) or '').strip()
 
     jsonrpc_methodHelp.signature = [['string', 'string']]
 
     def jsonrpc_methodSignature(self, request, method):
-        """Return a list of type signatures.
+        """
+        Return a list of type signatures.
 
         Each type signature is a list of the form [rtype, type1, type2, ...]
         where rtype is the return type and typeN is the type of the Nth
@@ -195,7 +198,8 @@ class JSONRPCIntrospection(JSONRPC):
 
 
 def addIntrospection(jsonrpc):
-    """Add Introspection support to an JSONRPC server.
+    """
+    Add Introspection support to an JSONRPC server.
 
     @param jsonrpc: The jsonrpc server to add Introspection support to.
     """

@@ -1,58 +1,63 @@
-# -*- test-case-name: twisted.web.test.test_jsonrpc -*-
-#
 # Copyright (c) 2001-2004 Twisted Matrix Laboratories.
 # See LICENSE for details.
-
-"""Test JSON-RPC support."""
-
-import time
-
+"""
+Test JSON-RPC support.
+"""
+from twisted.internet import reactor, defer
 from twisted.trial import unittest
 from twisted.web import server, static
-from twisted.internet import reactor, defer
-from twisted.python import log
 
 from txjsonrpc import jsonrpclib
 from txjsonrpc.web import jsonrpc
 from txjsonrpc.web.jsonrpc import JSONRPC, addIntrospection
 
+
 class TestRuntimeError(RuntimeError):
     pass
+
 
 class TestValueError(ValueError):
     pass
 
+
 class Test(JSONRPC):
+
 
     FAILURE = 666
     NOT_FOUND = 23
     SESSION_EXPIRED = 42
 
-    # the doc string is part of the test
     def jsonrpc_add(self, a, b):
-        """This function add two numbers."""
+        """
+        This function add two numbers.
+        """
+        # The doc string is part of the test.
         return a + b
 
     jsonrpc_add.signature = [['int', 'int', 'int'],
                             ['double', 'double', 'double']]
 
-    # the doc string is part of the test
     def jsonrpc_pair(self, string, num):
-        """This function puts the two arguments in an array."""
+        """
+        This function puts the two arguments in an array.
+        """
+        # The doc string is part of the test.
         return [string, num]
 
     jsonrpc_pair.signature = [['array', 'string', 'int']]
 
-    # the doc string is part of the test
     def jsonrpc_defer(self, x):
-        """Help for defer."""
+        """
+        Help for defer.
+        """
+        # The doc string is part of the test.
         return defer.succeed(x)
 
     def jsonrpc_deferFail(self):
         return defer.fail(TestValueError())
 
-    # don't add a doc string, it's part of the test
     def jsonrpc_fail(self):
+        # Don't add a doc string, it's part of the test.
         raise TestRuntimeError
 
     def jsonrpc_fault(self):
@@ -75,11 +80,13 @@ class Test(JSONRPC):
             return JSONRPC._getFunction(self, functionPath)
         except jsonrpclib.NoSuchFunction:
             if functionPath.startswith("SESSION"):
-                raise jsonrpclib.Fault(self.SESSION_EXPIRED, "Session non-existant/expired.")
+                raise jsonrpclib.Fault(
+                    self.SESSION_EXPIRED, "Session non-existant/expired.")
             else:
                 raise
 
     jsonrpc_dict.help = 'Help for dict.'
+
 
 class TestAuthHeader(Test):
     """
@@ -96,6 +103,7 @@ class TestAuthHeader(Test):
 
     def jsonrpc_authinfo(self):
         return self.request.getUser(), self.request.getPassword()
+
 
 class JSONRPCTestCase(unittest.TestCase):
 
@@ -141,7 +149,9 @@ class JSONRPCTestCase(unittest.TestCase):
 
 
 class JSONRPCTestCase2(JSONRPCTestCase):
-    """Test with proxy that doesn't add a slash."""
+    """
+    Test with proxy that doesn't add a slash.
+    """
 
     def proxy(self):
         return jsonrpc.Proxy("http://127.0.0.1:%d" % self.port)
@@ -176,13 +186,13 @@ class JSONRPCTestAuthenticated(JSONRPCTestCase):
         return p.callRemote("authinfo").addCallback(self.assertEquals, [self.user, self.password])
 
 
-
 class JSONRPCTestIntrospection(JSONRPCTestCase):
 
     def setUp(self):
         jsonrpc = Test()
         addIntrospection(jsonrpc)
-        self.p = reactor.listenTCP(0, server.Site(jsonrpc),interface="127.0.0.1")
+        self.p = reactor.listenTCP(
+            0, server.Site(jsonrpc),interface="127.0.0.1")
         self.port = self.p.getHost().port
 
     def testListMethods(self):
@@ -233,11 +243,13 @@ class JSONRPCClientErrorHandling(unittest.TestCase):
     def setUp(self):
         self.resource = static.File(__file__)
         self.resource.isLeaf = True
-        self.port = reactor.listenTCP(0, server.Site(self.resource), interface='127.0.0.1')
+        self.port = reactor.listenTCP(
+            0, server.Site(self.resource), interface='127.0.0.1')
 
     def tearDown(self):
         return self.port.stopListening()
 
     def testErroneousResponse(self):
-        proxy = jsonrpc.Proxy("http://127.0.0.1:%d/" % (self.port.getHost().port,))
+        proxy = jsonrpc.Proxy(
+            "http://127.0.0.1:%d/" % (self.port.getHost().port,))
         return self.assertFailure(proxy.callRemote("someMethod"), Exception)

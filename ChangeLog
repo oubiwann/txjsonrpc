@@ -7,6 +7,9 @@
 * Updated setup.py to use the new utils subpackage.
 * Added docs.
 * Updated README.
+* Cleaned up lots of unused imports.
+* Formatting tweaks.
+* Added a call to strip for the help-string-returning methods.
 
 2008.11.10
 

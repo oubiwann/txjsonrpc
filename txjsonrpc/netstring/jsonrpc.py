@@ -222,8 +222,8 @@ class QueryFactory(protocol.ClientFactory):
     data = ''
 
     def __init__(self, method, *args):
-        # pass the method name and JSON-RPC args (converted from python)
-        # into the template
+        # Pass the method name and JSON-RPC args (converted from python)
+        # into the template.
         self.payload = jsonrpclib.dumps({
             'method':method, 
             'params':args})
@@ -233,7 +233,7 @@ class QueryFactory(protocol.ClientFactory):
         if not self.deferred:
             return
         try:
-            # convert the response from JSON-RPC to python
+            # Convert the response from JSON-RPC to python.
             result = jsonrpclib.loads(contents)
             #response = jsonrpclib.loads(contents)
             #result = response['result']
@@ -272,7 +272,7 @@ class Proxy:
     'foobar' with *args.
     """
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, factoryClass=QueryFactory):
         """
         @type host: C{str}
         @param host: The host to which method calls are made.
@@ -282,9 +282,13 @@ class Proxy:
         """
         self.host = host
         self.port = port
+        self.factoryClass = factoryClass
 
-    def callRemote(self, method, *args):
-        factory = QueryFactory(method, *args)
+    def callRemote(self, method, *args, **kwargs):
+        factoryClass = kwargs.get("factoryClass")
+        if not factoryClass:
+            factoryClass = self.factoryClass
+        factory = factoryClass(method, *args)
         reactor.connectTCP(self.host, self.port, factory)
         return factory.deferred
 

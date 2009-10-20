@@ -10,6 +10,9 @@
 * Cleaned up lots of unused imports.
 * Formatting tweaks.
 * Added a call to strip for the help-string-returning methods.
+* Added a maxLength attribute to QueryFactory for custom settings by users.
+* Updated proxy to instantiate QueryFactory with an optional maxLength
+override.
 
 2008.11.10
 

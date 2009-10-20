@@ -5,7 +5,11 @@ Changes
 txJSON-RPC 0.3.0
 ----------------
 
-* Forth-coming release...
+* Removed unneeded dependency upon twisted.web2 for the TCP/Netstring JSON-RPC
+  code.
+
+* Updated Netstring JSON-RPC code to allow for setting the MAX_LENGTH
+  attribute.
 
 txJSON-RPC 0.2.0
 ----------------

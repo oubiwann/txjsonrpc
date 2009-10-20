@@ -8,9 +8,8 @@ from twisted.trial import unittest
 
 from txjsonrpc import jsonrpclib
 from txjsonrpc.netstring import jsonrpc
-from txjsonrpc.netstring.jsonrpc import addIntrospection
-from txjsonrpc.netstring.jsonrpc import JSONRPC
-from txjsonrpc.netstring.jsonrpc import Proxy
+from txjsonrpc.netstring.jsonrpc import (
+    addIntrospection, JSONRPC, Proxy, QueryFactory)
 
 
 class TestRuntimeError(RuntimeError):
@@ -86,6 +85,14 @@ class Test(JSONRPC):
     jsonrpc_dict.help = 'Help for dict.'
 
 
+class QueryFactoryTestCase(unittest.TestCase):
+
+    def testCreation(self):
+
+        factory = QueryFactory("mymethod", "myarg1", "myarg2")
+        self.assertEquals(factory.protocol.MAX_LENGTH, 99999)
+        
+
 class JSONRPCTestCase(unittest.TestCase):
     
     def setUp(self):
@@ -100,12 +107,14 @@ class JSONRPCTestCase(unittest.TestCase):
         return Proxy("127.0.0.1", self.port)
 
     def testResults(self):
+
         inputOutput = [
             ("add", (2, 3), 5),
             ("defer", ("a",), "a"),
             ("dict", ({"a": 1}, "a"), 1),
             ("pair", ("a", 1), ["a", 1]),
             ("complex", (), {"a": ["b", "c", 12, []], "D": "foo"})]
+
         def printError(error):
             print "Error!"
             print error
@@ -119,17 +128,88 @@ class JSONRPCTestCase(unittest.TestCase):
         return defer.DeferredList(dl, fireOnOneErrback=True)
 
     def testErrors(self):
+
         dl = []
         for code, methodName in [(666, "fail"), (666, "deferFail"),
                                  (12, "fault"), (23, "noSuchMethod"),
                                  (17, "deferFault"), (42, "SESSION_TEST")]:
             d = self.proxy().callRemote(methodName)
             d = self.assertFailure(d, jsonrpclib.Fault)
-            d.addCallback(lambda exc, code=code: self.assertEquals(exc.faultCode, code))
+            d.addCallback(
+                lambda exc, code=code: self.assertEquals(exc.faultCode, code))
             dl.append(d)
         d = defer.DeferredList(dl, fireOnOneErrback=True)
         d.addCallback(lambda ign: self.flushLoggedErrors())
         return d
+
+
+class JSONRPCClassMaxLengthTestCase(JSONRPCTestCase):
+
+    def proxy(self):
+
+        lengths = []
+
+        class Factory(QueryFactory):
+
+            MAX_LENGTH = 1234
+
+            def __init__(self, *args):
+                lengths.append(self.MAX_LENGTH)
+                QueryFactory.__init__(self, *args)
+
+        
+        proxy = Proxy("127.0.0.1", self.port, factoryClass=Factory)
+        self.maxLengths = lengths
+        return proxy
+
+
+    def testResults(self):
+
+        def checkMaxLength(result):
+            self.assertEquals(self.maxLengths, [1234])
+
+        d = JSONRPCTestCase.testResults(self)
+        d.addCallback(checkMaxLength)
+
+
+
+class JSONRPCMethodMaxLengthTestCase(JSONRPCTestCase):
+
+    def testResults(self):
+
+        lengths = []
+
+        inputOutput = [
+            ("add", (2, 3), 5),
+            ("defer", ("a",), "a"),
+            ("dict", ({"a": 1}, "a"), 1),
+            ("pair", ("a", 1), ["a", 1]),
+            ("complex", (), {"a": ["b", "c", 12, []], "D": "foo"})]
+
+        def checkMaxLength(result):
+            self.assertEquals(len(lengths), len(inputOutput))
+            self.assertEquals(lengths, [1234] * len(inputOutput))
+
+        class Factory(QueryFactory):
+
+            MAX_LENGTH = 1234
+
+            def __init__(self, *args):
+                lengths.append(self.MAX_LENGTH)
+                QueryFactory.__init__(self, *args)
+
+        def printError(error):
+            print "Error!"
+            print error
+
+        dl = []
+        for meth, args, outp in inputOutput:
+            d = self.proxy().callRemote(meth, factoryClass=Factory, *args)
+            d.addCallback(self.assertEquals, outp)
+            d.addErrback(printError)
+            dl.append(d)
+        d = defer.DeferredList(dl, fireOnOneErrback=True)
+        d.addCallback(checkMaxLength)
 
 
 class JSONRPCTestIntrospection(JSONRPCTestCase):

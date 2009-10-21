@@ -17,6 +17,9 @@ override.
 * Cleaned up examples.
 * Added an admin script for testing examples.
 * Updated the commit script to run the exmaple tests.
+* Added missing error handling in commit script.
+* Added PYTHONPATH to example runner commands.
+* Removed PYTHONPATH from admin/defs.sh.
 
 2008.11.10
 

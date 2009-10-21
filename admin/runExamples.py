@@ -1,8 +1,7 @@
 #!/usr/bin/python
 import os
 import sys
-from commands import getoutput
-from subprocess import Popen
+from subprocess import Popen, PIPE
 from time import sleep
 
 
@@ -32,15 +31,17 @@ for example, expectedResult in zip(examples, expectedResults):
     client, server = example
     print "Checking examples/%s against examples/%s ..." % (client, server)
     # start server
+    env = {"PYTHONPATH": os.getenv("PYTHONPATH")}
     command = "twistd -l /dev/null -noy %s" % os.path.join("examples", server)
-    pid = Popen(command, shell=True).pid
+    pid = Popen(command, shell=True, env=env).pid
     sleep(2)
     # run client
     command = "python %s" % os.path.join("examples", client)
-    result = preprocess(getoutput(command))
+    process = Popen(command, shell=True, stdout=PIPE, env=env)
+    result = preprocess(process.communicate()[0])
     # kill server
     os.kill(pid, 15)
     # check results
     if result != expectedResult:
-        print "ERROR: expected '%s' but got '%s'" % (result, expectedResult)
+        print "ERROR: expected '%s' but got '%s'" % (expectedResult, result)
         sys.exit(1)

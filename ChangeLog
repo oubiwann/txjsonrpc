@@ -26,6 +26,7 @@ override.
 * Updated TODO and README.
 * Added admin upload script.
 * Added placeholders for version spec files.
+* Added missing deferred returns in two tests.
 
 2008.11.10
 

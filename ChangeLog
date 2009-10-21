@@ -35,6 +35,7 @@ override.
 * Added request info to the specs.
 * Added versioned request functions to jsonrpclib.py and updated the
 ServerProxy with a version-sensitive dispatcher.
+* Removed non-pertinent sections from pre-version 1 spec.
 
 2008.11.10
 

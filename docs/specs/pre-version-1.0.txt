@@ -22,15 +22,12 @@ as part of the API. Its use here is for spec-compliance demonstration only::
     >>> _preV1Request("myfunc", ["arg1", "arg2", "arg3"])
     '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc"}'
 
+# XXX add an async example
+
 
 Response
 --------
 
-Notification
-------------
-
-Class Hinting
--------------
 
 Communication Examples
 ----------------------

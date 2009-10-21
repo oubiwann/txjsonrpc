@@ -31,6 +31,7 @@ override.
 * Added doctest runner.
 * Added manifest file.
 * Updated the commit script to run the doctest runner.
+* Added headings to the spec files.
 
 2008.11.10
 

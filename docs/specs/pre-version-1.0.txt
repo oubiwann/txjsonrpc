@@ -1,0 +1,19 @@
+===============
+Pre-version 1.0
+===============
+
+
+Request
+-------
+
+Response
+--------
+
+Notification
+------------
+
+Class Hinting
+-------------
+
+Communication Examples
+----------------------

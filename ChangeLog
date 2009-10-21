@@ -14,6 +14,9 @@
 * Updated proxy to instantiate QueryFactory with an optional maxLength
 override.
 * Updated history file.
+* Cleaned up examples.
+* Added an admin script for testing examples.
+* Updated the commit script to run the exmaple tests.
 
 2008.11.10
 

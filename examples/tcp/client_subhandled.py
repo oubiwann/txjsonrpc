@@ -7,17 +7,20 @@ from twisted.internet import defer
 
 from txjsonrpc.netstring.jsonrpc import Proxy
 
+
 def printValue(value):
     print "Result: %s" % str(value)
 
+
 def printError(error):
     print 'error', error
+
 
 def shutDown(data):
     print "Shutting down reactor..."
     reactor.stop()
 
-print "Making remote calls..."
+
 proxy = Proxy('127.0.0.1', 7080)
 dl = []
 

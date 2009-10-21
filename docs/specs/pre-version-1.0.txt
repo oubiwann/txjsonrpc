@@ -6,6 +6,23 @@ Pre-version 1.0
 Request
 -------
 
+A remote method is invoked by sending a request to a remote service. The
+request is a single object serialized using JSON.
+
+It has two properties:
+
+* method - A String containing the name of the method to be invoked.
+
+* params - An Array of objects to pass as arguments to the method.
+
+The following imported function is not public and not intended for regular use
+as part of the API. Its use here is for spec-compliance demonstration only::
+
+    >>> from txjsonrpc.jsonrpclib import _preV1Request
+    >>> _preV1Request("myfunc", ["arg1", "arg2", "arg3"])
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc"}'
+
+
 Response
 --------
 

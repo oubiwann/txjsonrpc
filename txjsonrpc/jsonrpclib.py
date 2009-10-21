@@ -8,7 +8,7 @@ from datetime import datetime
 import simplejson
 
 
-# From xmlrpclib
+# From xmlrpclib.
 SERVER_ERROR          = xmlrpclib.SERVER_ERROR
 NOT_WELLFORMED_ERROR  = xmlrpclib.NOT_WELLFORMED_ERROR
 UNSUPPORTED_ENCODING  = xmlrpclib.UNSUPPORTED_ENCODING
@@ -17,8 +17,13 @@ INVALID_JSONRPC       = xmlrpclib.INVALID_XMLRPC
 METHOD_NOT_FOUND      = xmlrpclib.METHOD_NOT_FOUND
 INVALID_METHOD_PARAMS = xmlrpclib.INVALID_METHOD_PARAMS
 INTERNAL_ERROR        = xmlrpclib.INTERNAL_ERROR
-# Custom errors
+# Custom errors.
 METHOD_NOT_CALLABLE   = -32604
+
+# Version constants.
+VERSION_P1 = 0
+VERSION_1 = 1
+VERSION_2 = 2
 
 
 class Fault(xmlrpclib.Fault):
@@ -99,18 +104,33 @@ class Transport(xmlrpclib.Transport):
         return getparser()
 
 
+def _preV1Request(method="", params=[], *args):
+    return dumps({"method": method, "params": params})
+
+
+def _v1Request(method="", params=[], id="", *args):
+    return dumps({"method": method, "params": params, "id": id})
+
+
+def _v2Request(method="", params=[], id="", *args):
+    return dumps({
+        "jsonrpc": "2.0", "method": method, "params": params, "id": id})
+
+
 class ServerProxy(xmlrpclib.ServerProxy):
     """
 
     """
-    def __init__(self, uri, transport=Transport(), *args, **kwds):
+    def __init__(self, uri, transport=Transport(), version=VERSION_P1, *args,
+                 **kwds):
         xmlrpclib.ServerProxy.__init__(self, uri, transport, *args, **kwds)
+        self.version = version
 
-    def __request(self, method, args):
+    def __request(self, *args):
         """
         Call a method on the remote server.
         """
-        request = dumps({'method':method, 'params':args})
+        request = self._getVersionedRequest(*args)
         response = self.__transport.request(
             self.__host,
             self.__handler,
@@ -121,3 +141,10 @@ class ServerProxy(xmlrpclib.ServerProxy):
             response = response[0]
         return response
 
+    def _getVersionedRequest(self, *args):
+        if self.version == VERSION_P1:
+            return _pV1Request(*args)
+        elif self.version == VERSION_1:
+            return _v1Request(*args)
+        elif self.version == VERSION_2:
+            return _v2Request(*args)

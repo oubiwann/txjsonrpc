@@ -23,15 +23,34 @@ It has three properties:
 The following imported function is not public and not intended for regular use
 as part of the API. Its use here is for spec-compliance demonstration only::
 
-    >>> from txjsonrpc.jsonrpclib import _v1Request
-    >>> _v1Request("myfunc", ["arg1", "arg2", "arg3"], "anid")
+    >>> from txjsonrpc.jsonrpclib import ServerProxy, VERSION_1
+    >>>
+    >>> proxy = ServerProxy("http://some.url", version=VERSION_1)
+    >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"], "anid")
     '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc", "id": "anid"}'
 
-# XXX add an async example
+# XXX add async examples for web, web2, and netstring
 
 
 Response
 --------
+
+When the method invocation completes, the service must reply with a response.
+The response is a single object serialized using JSON.
+
+It has three properties:
+
+    * result - The Object that was returned by the invoked method. This must be
+      null in case there was an error invoking the method.
+
+    * error - An Error object if there was an error invoking the method. It
+      must be null if there was no error.
+
+    * id - This must be the same id as the request it is responding to. Due to
+      the nature of callbacks in Twisted, this property is not needed nor used
+      by txJSON-RPC.  In the version 1.0 spec, it is provided for the sake of
+      compatibility.
+
 
 Notification
 ------------

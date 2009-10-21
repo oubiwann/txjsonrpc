@@ -22,7 +22,6 @@ class TestValueError(ValueError):
 
 class Test(JSONRPC):
 
-
     FAILURE = 666
     NOT_FOUND = 23
     SESSION_EXPIRED = 42
@@ -148,44 +147,6 @@ class JSONRPCTestCase(unittest.TestCase):
         return d
 
 
-class JSONRPCTestCase2(JSONRPCTestCase):
-    """
-    Test with proxy that doesn't add a slash.
-    """
-
-    def proxy(self):
-        return jsonrpc.Proxy("http://127.0.0.1:%d" % self.port)
-
-
-class JSONRPCTestAuthenticated(JSONRPCTestCase):
-    """
-    Test with authenticated proxy. We run this with the same inout/ouput as
-    above.
-    """
-    user = "username"
-    password = "asecret"
-
-    def setUp(self):
-        self.p = reactor.listenTCP(0, server.Site(TestAuthHeader()),
-                                   interface="127.0.0.1")
-        self.port = self.p.getHost().port
-
-
-    def testAuthInfoInURL(self):
-        p = jsonrpc.Proxy("http://%s:%s@127.0.0.1:%d/" % (self.user, self.password, self.port))
-        return p.callRemote("authinfo").addCallback(self.assertEquals, [self.user, self.password])
-
-
-    def testExplicitAuthInfo(self):
-        p = jsonrpc.Proxy("http://127.0.0.1:%d/" % (self.port,), self.user, self.password)
-        return p.callRemote("authinfo").addCallback(self.assertEquals, [self.user, self.password])
-
-
-    def testExplicitAuthInfoOverride(self):
-        p = jsonrpc.Proxy("http://wrong:info@127.0.0.1:%d/" % (self.port,), self.user, self.password)
-        return p.callRemote("authinfo").addCallback(self.assertEquals, [self.user, self.password])
-
-
 class JSONRPCTestIntrospection(JSONRPCTestCase):
 
     def setUp(self):
@@ -239,7 +200,61 @@ class JSONRPCTestIntrospection(JSONRPCTestCase):
         return defer.DeferredList(dl, fireOnOneErrback=True)
 
 
-class JSONRPCClientErrorHandling(unittest.TestCase):
+class ProxyWithoutSlashTestCase(JSONRPCTestCase):
+    """
+    Test with proxy that doesn't add a slash.
+    """
+
+    def proxy(self):
+        return jsonrpc.Proxy("http://127.0.0.1:%d" % self.port)
+
+
+class VersionPre1ProxyTestCase(JSONRPCTestCase):
+    """
+    Tests for the the original, pre-version 1.0 spec that txJSON-RPC was
+    originally released as.
+    """
+    def proxy(self):
+        url = "http://127.0.0.1:%d/" % self.port
+        return jsonrpc.Proxy(url, version=jsonrpclib.VERSION_PRE1)
+
+
+class AuthenticatedProxyTestCase(JSONRPCTestCase):
+    """
+    Test with authenticated proxy. We run this with the same inout/ouput as
+    above.
+    """
+    user = "username"
+    password = "asecret"
+
+    def setUp(self):
+        self.p = reactor.listenTCP(0, server.Site(TestAuthHeader()),
+                                   interface="127.0.0.1")
+        self.port = self.p.getHost().port
+
+    def testAuthInfoInURL(self):
+        p = jsonrpc.Proxy(
+            "http://%s:%s@127.0.0.1:%d/" % (self.user, self.password,
+            self.port))
+        d = p.callRemote("authinfo")
+        return d.addCallback(self.assertEquals, [self.user, self.password])
+
+    def testExplicitAuthInfo(self):
+        p = jsonrpc.Proxy(
+            "http://127.0.0.1:%d/" % (self.port,), self.user, self.password)
+        d = p.callRemote("authinfo")
+        return d.addCallback(self.assertEquals, [self.user, self.password])
+
+    def testExplicitAuthInfoOverride(self):
+        p = jsonrpc.Proxy(
+            "http://wrong:info@127.0.0.1:%d/" % (self.port,), self.user,
+            self.password)
+        d = p.callRemote("authinfo")
+        return d.addCallback(self.assertEquals, [self.user, self.password])
+
+
+class ProxyErrorHandlingTestCase(unittest.TestCase):
+
     def setUp(self):
         self.resource = static.File(__file__)
         self.resource.isLeaf = True

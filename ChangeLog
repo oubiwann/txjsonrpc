@@ -1,3 +1,14 @@
+2009.11.21
+
+* Updated the QueryFactory to take a version parameter in the constructor.
+* Added a payload creator that uses the version to determine which payload to
+build.
+* Changed the constructor to use a new private method for creating the payload.
+* Changed the async Proxy classes in web and netstring to accept a version
+parameter in the constructor as well as in the callRemote method.
+* Updated license file with more recent copyright info.
+* Added an exmaple for web client.
+
 2009.11.20
 
 * Added clean.sh admin script.

@@ -8,6 +8,7 @@ from time import sleep
 examples = [
     ("tcp/client.py", "tcp/server.tac"),
     ("tcp/client_subhandled.py", "tcp/server_subhandled.tac"),
+    ("web/client.py", "web/server.tac"),
     ("web2/client.py", "web2/server.tac"),
     ]
 
@@ -21,7 +22,12 @@ expectedResults = [
     Result: bite me
     Shutting down reactor...
     """,
-    "8",
+    """
+    Result: 8
+    Result: bite me
+    Shutting down reactor...
+    """,
+    "Result: 8",
     ]
 
 

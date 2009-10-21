@@ -20,6 +20,8 @@ override.
 * Added missing error handling in commit script.
 * Added PYTHONPATH to example runner commands.
 * Removed PYTHONPATH from admin/defs.sh.
+* Removed debugging echo statement from commit.sh.
+* Removed manual PYTHONPATH setting in example runner.
 
 2008.11.10
 

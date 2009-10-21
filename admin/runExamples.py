@@ -31,13 +31,12 @@ for example, expectedResult in zip(examples, expectedResults):
     client, server = example
     print "Checking examples/%s against examples/%s ..." % (client, server)
     # start server
-    env = {"PYTHONPATH": os.getenv("PYTHONPATH")}
     command = "twistd -l /dev/null -noy %s" % os.path.join("examples", server)
-    pid = Popen(command, shell=True, env=env).pid
+    pid = Popen(command, shell=True).pid
     sleep(2)
     # run client
     command = "python %s" % os.path.join("examples", client)
-    process = Popen(command, shell=True, stdout=PIPE, env=env)
+    process = Popen(command, shell=True, stdout=PIPE)
     result = preprocess(process.communicate()[0])
     # kill server
     os.kill(pid, 15)

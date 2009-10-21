@@ -2,15 +2,11 @@
 TODO
 ====
 
-Known bugs:
+Known Issues
+------------
 
- *
+* txJSON-RPC doesn't yet support the proposed v2.0 JSON-RPC protocol.
 
-twisted.web JSON-RPC
---------------------
-
-twisted.web2 JSON-RPC
----------------------
 
 JSON-RPC over TCP
 -----------------
@@ -28,8 +24,3 @@ jsonrpclib
 
 * use simplesjon's hook for creating appropriate JS objects from hints in the
   results
-
-tests
------
-
-* 

@@ -1,0 +1,25 @@
+===========
+Version 2.0
+===========
+
+
+Request
+-------
+
+Notification
+~~~~~~~~~~~~
+
+Parameters
+~~~~~~~~~~
+
+Response
+--------
+
+Error Object
+~~~~~~~~~~~~
+
+Batch/Multicall
+---------------
+
+Examples
+--------

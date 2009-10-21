@@ -11,6 +11,7 @@ examples = [
     ("web2/client.py", "web2/server.tac"),
     ]
 
+
 expectedResults = [
     "Result: 8",
     """
@@ -23,8 +24,10 @@ expectedResults = [
     "8",
     ]
 
+
 def preprocess(result):
     return sorted([x.strip() for x in result.strip().split("\n")])
+
 
 for example, expectedResult in zip(examples, expectedResults):
     expectedResult = preprocess(expectedResult)

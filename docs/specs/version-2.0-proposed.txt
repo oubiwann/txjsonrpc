@@ -6,6 +6,44 @@ Version 2.0
 Request
 -------
 
+A remote procedure call is made by sending a Request to a remote service. The
+Request is expressed as a single JSON Object, with the following members:
+
+* jsonrpc - A String specifying the version of the JSON-RPC protocol. MUST
+  be exactly "2.0". If jsonrpc is missing, the server MAY handle the
+  Request as JSON-RPC V1.0-Request.
+
+* method - A String containing the name of the procedure to be invoked.
+  Procedure names that begin with the word rpc followed by a period
+  character (U+002E or ASCII 46) are reserved for rpc-internal methods and
+  extensions and MUST NOT be used for anything else.
+
+* params - An Array or Object, that holds the actual parameter values for
+  the invocation of the procedure. Can be omitted if empty.
+
+* id - A Request identifier that MUST be a JSON scalar (String, Number,
+  True, False), but SHOULD normally not be Null [1], and Numbers SHOULD NOT
+  contain fractional parts [2].  If omitted, the Request is a Notification.
+  This id can be used to correlate a Response with its Request. The server
+  MUST reply with the same value. Due to the nature of callbacks in
+  Twisted, this property is not needed nor used by txJSON-RPC.  In the
+  version 2.0 spec, it is provided for the sake of compatibility.
+
+The folowing is not intended to be use as part of the API but is imported and
+used here for spec-compliance demonstration only::
+
+    >>> from txjsonrpc.jsonrpclib import _v1Request
+    >>> _v1Request("myfunc", ["arg1", "arg2", "arg3"], "anid")
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc", "id": "anid"}'
+
+The following imported function is not public and not intended for regular use
+as part of the API. Its use here is for spec-compliance demonstration only::
+
+    >>> from txjsonrpc.jsonrpclib import _v2Request
+    >>> _v2Request("myfunc", ["arg1", "arg2", "arg3"], "anid")
+    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "2.0", "method": "myfunc", "id": "anid"}'
+
+
 Notification
 ~~~~~~~~~~~~
 

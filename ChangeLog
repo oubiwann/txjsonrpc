@@ -32,6 +32,9 @@ override.
 * Added manifest file.
 * Updated the commit script to run the doctest runner.
 * Added headings to the spec files.
+* Added request info to the specs.
+* Added versioned request functions to jsonrpclib.py and updated the
+ServerProxy with a version-sensitive dispatcher.
 
 2008.11.10
 

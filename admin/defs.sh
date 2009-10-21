@@ -6,7 +6,6 @@ BZR='lp:~oubiwann/txjsonrpc/main'
 SVN=svn+https://twisted-jsonrpc.googlecode.com/svn/trunk
 FLAG='skip_tests'
 MSG=commit-msg
-export PYTHONPATH=.:./test
 
 function getDiff {
     bzr diff $1 | \

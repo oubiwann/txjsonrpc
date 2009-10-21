@@ -27,6 +27,8 @@ override.
 * Added admin upload script.
 * Added placeholders for version spec files.
 * Added missing deferred returns in two tests.
+* Added testing helper subpackage.
+* Added doctest runner.
 
 2008.11.10
 

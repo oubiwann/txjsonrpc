@@ -27,6 +27,8 @@ as part of the API. Its use here is for spec-compliance demonstration only::
     >>> _v1Request("myfunc", ["arg1", "arg2", "arg3"], "anid")
     '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc", "id": "anid"}'
 
+# XXX add an async example
+
 
 Response
 --------

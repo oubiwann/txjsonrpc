@@ -119,7 +119,7 @@ def _v2Request(method="", params=[], id="", *args):
 
 class ServerProxy(xmlrpclib.ServerProxy):
     """
-
+    XXX add missing docstring
     """
     def __init__(self, uri, transport=Transport(), version=VERSION_P1, *args,
                  **kwds):
@@ -129,6 +129,10 @@ class ServerProxy(xmlrpclib.ServerProxy):
     def __request(self, *args):
         """
         Call a method on the remote server.
+
+        XXX what calls __request?
+        XXX Is there any way to indicate that we'd want a notification request
+        instead of a regular request?
         """
         request = self._getVersionedRequest(*args)
         response = self.__transport.request(

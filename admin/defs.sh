@@ -45,7 +45,8 @@ function cleanup {
         test.out \
         .DS_Store \
         CHECK_THIS_BEFORE_UPLOAD.txt \
-        $EGG_NAME.egg-info
+        $EGG_NAME.egg-info \
+        doctest.out
     echo "Done."
 }
 

@@ -172,7 +172,6 @@ class JSONRPCClassMaxLengthTestCase(JSONRPCTestCase):
         d.addCallback(checkMaxLength)
 
 
-
 class JSONRPCMethodMaxLengthTestCase(JSONRPCTestCase):
 
     def testResults(self):

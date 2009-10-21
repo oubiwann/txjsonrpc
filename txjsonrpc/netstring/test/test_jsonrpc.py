@@ -170,6 +170,7 @@ class JSONRPCClassMaxLengthTestCase(JSONRPCTestCase):
 
         d = JSONRPCTestCase.testResults(self)
         d.addCallback(checkMaxLength)
+        return d
 
 
 class JSONRPCMethodMaxLengthTestCase(JSONRPCTestCase):
@@ -209,6 +210,7 @@ class JSONRPCMethodMaxLengthTestCase(JSONRPCTestCase):
             dl.append(d)
         d = defer.DeferredList(dl, fireOnOneErrback=True)
         d.addCallback(checkMaxLength)
+        return d
 
 
 class JSONRPCTestIntrospection(JSONRPCTestCase):

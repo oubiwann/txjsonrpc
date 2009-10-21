@@ -10,4 +10,9 @@ written in Twisted.
 Features
 ========
 
-* 
+* Asynchronous JSON-RPC server and client code.
+
+* Support for HTTP and TCP (Netstring) JSON-RPC.
+
+* A jsonrpclib similar to the one for XLM-RPC offered by the Python standard
+  library.

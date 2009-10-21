@@ -23,6 +23,7 @@ override.
 * Removed debugging echo statement from commit.sh.
 * Removed manual PYTHONPATH setting in example runner.
 * Formatting tweaks.
+* Updated TODO and README.
 
 2008.11.10
 

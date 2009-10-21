@@ -36,7 +36,7 @@ for example, expectedResult in zip(examples, expectedResults):
     # start server
     command = "twistd -l /dev/null -noy %s" % os.path.join("examples", server)
     pid = Popen(command, shell=True).pid
-    sleep(2)
+    sleep(1)
     # run client
     command = "python %s" % os.path.join("examples", client)
     process = Popen(command, shell=True, stdout=PIPE)

@@ -29,21 +29,17 @@ Request is expressed as a single JSON Object, with the following members:
   Twisted, this property is not needed nor used by txJSON-RPC.  In the
   version 2.0 spec, it is provided for the sake of compatibility.
 
-The folowing is not intended to be use as part of the API but is imported and
-used here for spec-compliance demonstration only::
-
-    >>> from txjsonrpc.jsonrpclib import _v1Request
-    >>> _v1Request("myfunc", ["arg1", "arg2", "arg3"], "anid")
-    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc", "id": "anid"}'
-
 The following imported function is not public and not intended for regular use
 as part of the API. Its use here is for spec-compliance demonstration only::
 
-    >>> from txjsonrpc.jsonrpclib import _v2Request
-    >>> _v2Request("myfunc", ["arg1", "arg2", "arg3"], "anid")
+    >>> from txjsonrpc.jsonrpclib import ServerProxy, VERSION_2
+    >>>
+    >>> proxy = ServerProxy("http://some.url", version=VERSION_2)
+    >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"], "anid")
     '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "2.0", "method": "myfunc", "id": "anid"}'
 
-# XXX add an async example
+# XXX add async examples for web, web2, and netstring
+# XXX add named parameter support example for each as well
 
 
 Notification

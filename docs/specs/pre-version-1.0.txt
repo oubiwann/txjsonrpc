@@ -18,15 +18,47 @@ It has two properties:
 The following imported function is not public and not intended for regular use
 as part of the API. Its use here is for spec-compliance demonstration only::
 
-    >>> from txjsonrpc.jsonrpclib import _preV1Request
-    >>> _preV1Request("myfunc", ["arg1", "arg2", "arg3"])
+    >>> from txjsonrpc.jsonrpclib import ServerProxy, VERSION_PRE1
+    >>>
+    >>> proxy = ServerProxy("http://some.url", version=VERSION_PRE1)
+    >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"])
     '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc"}'
 
-# XXX add an async example
+Note that this is the default behaviour as well: if we want to use the original
+txJSON-RPC version, we can just do this::
+
+    >>> from txjsonrpc.jsonrpclib import ServerProxy
+    >>>
+    >>> proxy = ServerProxy("http://some.url")
+    >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"])
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc"}'
+
+# XXX add async examples for web, web2, and netstring
+
+Async twisted.web-based request::
+
+    >>> from txjsonrpc.jsonrpclib import VERSION_PRE1
+    >>> from txjsonrpc.web.jsonrpc import QueryFactory
+    >>>
+    >>> factory = QueryFactory("path", "host", "myfunc", "user",
+    ...   "password", VERSION_PRE1, "arg1", "arg2", "arg3")
+    >>> factory.payload
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc"}'
 
 
 Response
 --------
+
+When the method invocation completes, the service must reply with a response.
+The response is a single object serialized using JSON.
+
+It has two properties:
+
+    * result - The Object that was returned by the invoked method. This must be
+      null in case there was an error invoking the method.
+
+    * error - An Error object if there was an error invoking the method. It
+      must be null if there was no error.
 
 
 Communication Examples

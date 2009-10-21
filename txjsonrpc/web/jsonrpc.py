@@ -203,10 +203,10 @@ class JSONRPCIntrospection(JSONRPC):
         todo = [(self._jsonrpc_parent, '')]
         while todo:
             obj, prefix = todo.pop(0)
-            functions.extend([ prefix + name for name in obj._listFunctions() ])
-            todo.extend([ (obj.getSubHandler(name),
-                           prefix + name + obj.separator)
-                          for name in obj.getSubHandlerPrefixes() ])
+            functions.extend([prefix + name for name in obj._listFunctions()])
+            todo.extend([(obj.getSubHandler(name),
+                          prefix + name + obj.separator)
+                         for name in obj.getSubHandlerPrefixes()])
         return functions
 
     jsonrpc_listMethods.signature = [['array']]
@@ -274,15 +274,22 @@ class QueryFactory(protocol.ClientFactory):
     deferred = None
     protocol = QueryProtocol
 
-    def __init__(self, path, host, method, user=None, password=None, *args):
+    def __init__(self, path, host, method, user=None, password=None,
+                 version=jsonrpclib.VERSION_PRE1, *args):
         self.path, self.host = path, host
         self.user, self.password = user, password
         # pass the method name and JSON-RPC args (converted from python)
         # into the template
-        self.payload = jsonrpclib.dumps({
-            'method':method,
-            'params':args})
+        self.payload = self._buildVersionedPayload(version, method, args)
         self.deferred = defer.Deferred()
+
+    def _buildVersionedPayload(self, version, *args):
+        if version == jsonrpclib.VERSION_PRE1:
+            return jsonrpclib._preV1Request(*args)
+        elif version == jsonrpclib.VERSION_1:
+            return jsonrpclib._v1Request(*args)
+        elif version == jsonrpclib.VERSION_2:
+            return jsonrpclib._v2Request(*args)
 
     def parseResponse(self, contents):
         if not self.deferred:
@@ -327,7 +334,8 @@ class Proxy:
     'foobar' with *args.
     """
 
-    def __init__(self, url, user=None, password=None):
+    def __init__(self, url, user=None, password=None,
+                 version=jsonrpclib.VERSION_PRE1):
         """
         @type url: C{str}
         @param url: The URL to which to post method calls.  Calls will be made
@@ -346,7 +354,14 @@ class Proxy:
         server when making calls.  If specified, overrides any password
         information embedded in C{url}.  If not specified, a value may be taken
         from C{url} if present.
+
+        @type version: C{int}
+        @param version: The version indicates which JSON-RPC spec to support.
+        The available choices are jsonrpclib.VERSION*. The default is to use
+        the version of the spec that txJSON-RPC was originally released with,
+        pre-Version 1.0.
         """
+        self.version = version
         scheme, netloc, path, params, query, fragment = urlparse.urlparse(url)
         netlocParts = netloc.split('@')
         if len(netlocParts) == 2:
@@ -373,9 +388,12 @@ class Proxy:
         if password is not None:
             self.password = password
 
-    def callRemote(self, method, *args):
+    def callRemote(self, method, *args, **kwargs):
+        version = kwargs.get("version")
+        if version == None:
+            version = self.version
         factory = QueryFactory(self.path, self.host, method, self.user,
-            self.password, *args)
+            self.password, version, *args)
         if self.secure:
             from twisted.internet import ssl
             reactor.connectSSL(self.host, self.port or 443,

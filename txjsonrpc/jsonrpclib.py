@@ -21,7 +21,7 @@ INTERNAL_ERROR        = xmlrpclib.INTERNAL_ERROR
 METHOD_NOT_CALLABLE   = -32604
 
 # Version constants.
-VERSION_P1 = 0
+VERSION_PRE1 = 0
 VERSION_1 = 1
 VERSION_2 = 2
 
@@ -112,16 +112,24 @@ def _v1Request(method="", params=[], id="", *args):
     return dumps({"method": method, "params": params, "id": id})
 
 
+def _v1Notification(method="", params=[], *args):
+    return _v1Request(method=method, params=param, id=None)
+
+
 def _v2Request(method="", params=[], id="", *args):
     return dumps({
         "jsonrpc": "2.0", "method": method, "params": params, "id": id})
+
+
+def _v2Notification(method="", params=[], *args):
+    return _v2Request(method=method, params=param, id=None)
 
 
 class ServerProxy(xmlrpclib.ServerProxy):
     """
     XXX add missing docstring
     """
-    def __init__(self, uri, transport=Transport(), version=VERSION_P1, *args,
+    def __init__(self, uri, transport=Transport(), version=VERSION_PRE1, *args,
                  **kwds):
         xmlrpclib.ServerProxy.__init__(self, uri, transport, *args, **kwds)
         self.version = version
@@ -135,6 +143,9 @@ class ServerProxy(xmlrpclib.ServerProxy):
         instead of a regular request?
         """
         request = self._getVersionedRequest(*args)
+        # XXX do a check here for id; if null, skip the response
+        # XXX in order to do this effectively, we might have to change the
+        # request functions to objects, so that we can get at an id attribute
         response = self.__transport.request(
             self.__host,
             self.__handler,
@@ -146,8 +157,8 @@ class ServerProxy(xmlrpclib.ServerProxy):
         return response
 
     def _getVersionedRequest(self, *args):
-        if self.version == VERSION_P1:
-            return _pV1Request(*args)
+        if self.version == VERSION_PRE1:
+            return _preV1Request(*args)
         elif self.version == VERSION_1:
             return _v1Request(*args)
         elif self.version == VERSION_2:

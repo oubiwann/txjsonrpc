@@ -13,6 +13,8 @@ and callRemote.
 * Added a jsonrpc module for abstracting base-classes and removing redundancy
 between the three JSON-RPC implementations.
 * Added a BaseProxy class.
+* Import cleanup.
+* Moved more common methods into the base query factory class.
 
 2009.11.20
 

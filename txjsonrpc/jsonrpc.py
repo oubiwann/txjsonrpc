@@ -1,6 +1,63 @@
 from twisted.internet import defer, protocol
+from twisted.python import reflect
 
 from txjsonrpc import jsonrpclib
+
+
+class BaseSubhandler:
+    """
+    Sub-handlers for prefixed methods (e.g., system.listMethods)
+    can be added with putSubHandler. By default, prefixes are
+    separated with a '.'. Override self.separator to change this.
+    """
+    def __init__(self):
+        self.subHandlers = {}
+
+    def putSubHandler(self, prefix, handler):
+        self.subHandlers[prefix] = handler
+
+    def getSubHandler(self, prefix):
+        return self.subHandlers.get(prefix, None)
+
+    def getSubHandlerPrefixes(self):
+        return self.subHandlers.keys()
+
+    def _getFunction(self, functionPath):
+        """
+        Given a string, return a function, or raise jsonrpclib.NoSuchFunction.
+
+        This returned function will be called, and should return the result
+        of the call, a Deferred, or a Fault instance.
+
+        Override in subclasses if you want your own policy. The default
+        policy is that given functionPath 'foo', return the method at
+        self.jsonrpc_foo, i.e. getattr(self, "jsonrpc_" + functionPath).
+        If functionPath contains self.separator, the sub-handler for
+        the initial prefix is used to search for the remaining path.
+        """
+        if functionPath.find(self.separator) != -1:
+            prefix, functionPath = functionPath.split(self.separator, 1)
+            handler = self.getSubHandler(prefix)
+            if handler is None:
+                raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND,
+                    "no such sub-handler %s" % prefix)
+            return handler._getFunction(functionPath)
+
+        f = getattr(self, "jsonrpc_%s" % functionPath, None)
+        if not f:
+            raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND,
+                "function %s not found" % functionPath)
+        elif not callable(f):
+            raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_CALLABLE,
+                "function %s not callable" % functionPath)
+        else:
+            return f
+
+    def _listFunctions(self):
+        """
+        Return a list of the names of all jsonrpc methods.
+        """
+        return reflect.prefixedMethodNames(self.__class__, 'jsonrpc_')
 
 
 class BaseQueryFactory(protocol.ClientFactory):

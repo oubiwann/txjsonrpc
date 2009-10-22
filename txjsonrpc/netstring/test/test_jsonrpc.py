@@ -23,8 +23,7 @@ class TestValueError(ValueError):
 class Test(JSONRPC):
 
     FAILURE = 666
-    NOT_FOUND = 23
-    SESSION_EXPIRED = 42
+    NOT_FOUND = jsonrpclib.METHOD_NOT_FOUND
 
     addSlash = True
     
@@ -74,13 +73,7 @@ class Test(JSONRPC):
         return map[key]
 
     def getFunction(self, functionPath):
-        try:
-            return JSONRPC.getFunction(self, functionPath)
-        except jsonrpclib.NoSuchFunction:
-            if functionPath.startswith("SESSION"):
-                raise jsonrpclib.Fault(self.SESSION_EXPIRED, "Session non-existant/expired.")
-            else:
-                raise
+        return JSONRPC.getFunction(self, functionPath)
 
     jsonrpc_dict.help = 'Help for dict.'
 
@@ -131,8 +124,8 @@ class JSONRPCTestCase(unittest.TestCase):
 
         dl = []
         for code, methodName in [(666, "fail"), (666, "deferFail"),
-                                 (12, "fault"), (23, "noSuchMethod"),
-                                 (17, "deferFault"), (42, "SESSION_TEST")]:
+                                 (12, "fault"), (-32601, "noSuchMethod"),
+                                 (17, "deferFault"), (-32601, "SESSION_TEST")]:
             d = self.proxy().callRemote(methodName)
             d = self.assertFailure(d, jsonrpclib.Fault)
             d.addCallback(

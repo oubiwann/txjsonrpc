@@ -281,35 +281,6 @@ class QueryFactory(BaseQueryFactory):
         self.path, self.host = path, host
         self.user, self.password = user, password
 
-    def parseResponse(self, contents):
-        if not self.deferred:
-            return
-        try:
-            # Convert the response from JSON-RPC to python.
-            response = jsonrpclib.loads(contents)
-            if isinstance(response, list):
-                response = response[0]
-        except Exception, error:
-            self.deferred.errback(error)
-            self.deferred = None
-        else:
-            # XXX response[0][0] may not be the same
-            # with JSON-RPC...
-            #self.deferred.callback(response[0][0])
-            self.deferred.callback(response)
-            self.deferred = None
-
-    def clientConnectionLost(self, _, reason):
-        if self.deferred is not None:
-            self.deferred.errback(reason)
-            self.deferred = None
-
-    clientConnectionFailed = clientConnectionLost
-
-    def badStatus(self, status, message):
-        self.deferred.errback(ValueError(status, message))
-        self.deferred = None
-
 
 class Proxy(BaseProxy):
     """

@@ -8,12 +8,8 @@ from twisted.trial import unittest
 from twisted.web2 import server
 from twisted.web2.channel import http
 
-try:
-    from txjsonrpc.web.jsonrpc import Proxy
-except ImportError:
-    Proxy = None
-
 from txjsonrpc import jsonrpclib
+from txjsonrpc.web.jsonrpc import Proxy
 from txjsonrpc.web2.jsonrpc import JSONRPC, addIntrospection
 
 
@@ -92,9 +88,6 @@ class Test(JSONRPC):
 
 class JSONRPCTestCase(unittest.TestCase):
     
-    if not Proxy:
-        skip = "Until web2 has an XML-RPC client, this test requires twisted.web."
-
     def setUp(self):
         self.p = reactor.listenTCP(0, http.HTTPFactory(server.Site(Test())),
                                    interface="127.0.0.1")

@@ -33,9 +33,9 @@ txJSON-RPC version, we can just do this::
     >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"])
     '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc"}'
 
-# XXX add async examples for web, web2, and netstring
-
-Async twisted.web-based request::
+Note that all three txJSON-RPC subpackages make use of the same code for
+creating a payload to send to a JSON-RPC server. Here's an example for the
+twisted.web async request::
 
     >>> from txjsonrpc.jsonrpclib import VERSION_PRE1
     >>> from txjsonrpc.web.jsonrpc import QueryFactory
@@ -50,16 +50,39 @@ Response
 --------
 
 When the method invocation completes, the service must reply with a response.
-The response is a single object serialized using JSON.
+In the case of error-free method calls, the response sill simply be the JSON
+data for the result.
 
-It has two properties:
+In the case of an error, an object with the following attributes will be
+returned:
 
-    * result - The Object that was returned by the invoked method. This must be
-      null in case there was an error invoking the method.
+* fault - The class name of the exception that was raised.
 
-    * error - An Error object if there was an error invoking the method. It
-      must be null if there was no error.
+* faultCode - The code that was passed when the exception was created.
 
+* faultString - The error messages that was passed when the exception was
+  created.
 
-Communication Examples
-----------------------
+Here's an example of a successful response::
+
+    >>> from txjsonrpc.jsonrpclib import dumps, VERSION_PRE1
+    >>>
+    >>> result = 8
+    >>> dumps(result, version=VERSION_PRE1)
+    '8'
+
+The default behaviour is to fall back to pre-Version 1.0 of the spec::
+
+    >>> from txjsonrpc.jsonrpclib import dumps
+    >>>
+    >>> result = 8
+    >>> dumps(result)
+    '8'
+
+Here's an example error response::
+
+    >>> from txjsonrpc.jsonrpclib import Fault, dumps
+    >>>
+    >>> error = Fault(86, "No more pasta")
+    >>> dumps(error)
+    '{"fault": "Fault", "faultCode": 86, "faultString": "No more pasta"}'

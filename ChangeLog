@@ -19,6 +19,9 @@ between the three JSON-RPC implementations.
 * Removed session code from netstring RPC test.
 * Moved introspection into base module.
 * Changed introspection to behave like a mixin instead of a subclass.
+* Updated JSON-RPC web2 to use new base classes.
+* Updated JSON-RPC web2's Introspection class to use the base introspection
+class.
 
 2009.11.20
 

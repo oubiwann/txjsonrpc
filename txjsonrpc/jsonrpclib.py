@@ -35,6 +35,7 @@ class NoSuchFunction(Fault):
     There is no function by the given name.
     """
 
+
 class JSONRPCEncoder(simplejson.JSONEncoder):
     """
     Provide custom serializers for JSON-RPC.
@@ -45,12 +46,31 @@ class JSONRPCEncoder(simplejson.JSONEncoder):
         raise TypeError("%r is not JSON serializable" % (obj,))
 
 
-def dumps(obj, **kws):
+def dumps(obj, **kwargs):
+    try:
+        version = kwargs.pop("version")
+    except KeyError:
+        version = VERSION_PRE1
+    try:
+        id = kwargs.pop("id")
+    except KeyError:
+        id = None
     if isinstance(obj, Exception):
-        obj = {'fault': obj.__class__.__name__,
-            'faultCode': obj.faultCode,
-            'faultString': obj.faultString}
-    return simplejson.dumps(obj, cls=JSONRPCEncoder, **kws)
+        result = None
+        error = {'fault': obj.__class__.__name__,
+                 'faultCode': obj.faultCode,
+                 'faultString': obj.faultString}
+    else:
+        result = obj
+        error = None
+    if version == VERSION_PRE1:
+        if result:
+            obj = result
+        else:
+            obj = error
+    else:
+        obj = {"result": result, "error": error, "id": id}
+    return simplejson.dumps(obj, cls=JSONRPCEncoder, **kwargs)
 
 
 def loads(string, **kws):
@@ -138,7 +158,6 @@ class ServerProxy(xmlrpclib.ServerProxy):
         """
         Call a method on the remote server.
 
-        XXX what calls __request?
         XXX Is there any way to indicate that we'd want a notification request
         instead of a regular request?
         """

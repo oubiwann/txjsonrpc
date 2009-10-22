@@ -29,7 +29,17 @@ as part of the API. Its use here is for spec-compliance demonstration only::
     >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"], "anid")
     '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc", "id": "anid"}'
 
-# XXX add async examples for web, web2, and netstring
+Note that all three txJSON-RPC subpackages make use of the same code for
+creating a payload to send to a JSON-RPC server. Here's an example for the
+twisted.web async request::
+
+    >>> from txjsonrpc.jsonrpclib import VERSION_1
+    >>> from txjsonrpc.web.jsonrpc import QueryFactory
+    >>>
+    >>> factory = QueryFactory("path", "host", "myfunc", "user",
+    ...   "password", VERSION_1, "arg1", "arg2", "arg3")
+    >>> factory.payload
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc", "id": ""}'
 
 
 Response
@@ -51,12 +61,32 @@ It has three properties:
       by txJSON-RPC.  In the version 1.0 spec, it is provided for the sake of
       compatibility.
 
+Here's an example of a successful response::
+
+    >>> from txjsonrpc.jsonrpclib import dumps, VERSION_1
+    >>>
+    >>> result = 8
+    >>> dumps(result, id=1234, version=VERSION_1)
+    '{"id": 1234, "result": 8, "error": null}'
+
+Here's an example error response::
+
+    >>> from txjsonrpc.jsonrpclib import Fault, dumps, VERSION_1
+    >>>
+    >>> error = Fault(86, "No more pasta")
+    >>> dumps(error, id=1235, version=VERSION_1)
+    '{"id": 1235, "result": null, "error": {"fault": "Fault", "faultCode": 86, "faultString": "No more pasta"}}'
+
 
 Notification
 ------------
 
+
 Class Hinting
 -------------
+
+Class hinting is currently unsupported by txJSON-RPC.
+
 
 Communication Examples
 ----------------------

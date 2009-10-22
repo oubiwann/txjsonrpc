@@ -1,3 +1,9 @@
+2009.11.22
+
+* Added support for version 1.0 of the JSON-RPC spec to jsonrpclib.
+* Finished the pre-version 1.0 spec.
+* Updated the version 1.0 spec with response examples.
+
 2009.11.21
 
 * Updated the QueryFactory to take a version parameter in the constructor.

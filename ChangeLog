@@ -17,6 +17,8 @@ between the three JSON-RPC implementations.
 * Moved more common methods into the base query factory class.
 * Created a BaseSubhandler subclass for http and netstring RPC classes.
 * Removed session code from netstring RPC test.
+* Moved introspection into base module.
+* Changed introspection to behave like a mixin instead of a subclass.
 
 2009.11.20
 

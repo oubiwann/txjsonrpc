@@ -7,9 +7,10 @@ from twisted.internet import reactor, defer
 from twisted.trial import unittest
 
 from txjsonrpc import jsonrpclib
+from txjsonrpc.jsonrpc import addIntrospection
 from txjsonrpc.netstring import jsonrpc
 from txjsonrpc.netstring.jsonrpc import (
-    addIntrospection, JSONRPC, Proxy, QueryFactory)
+    JSONRPC, Proxy, QueryFactory)
 
 
 class TestRuntimeError(RuntimeError):
@@ -210,8 +211,7 @@ class JSONRPCTestIntrospection(JSONRPCTestCase):
 
     def setUp(self):
         server = jsonrpc.RPCFactory(Test)
-        addIntrospection(server)
-        #server.addIntrospection()
+        server.addIntrospection()
         self.p = reactor.listenTCP(0, server, interface="127.0.0.1")
         self.port = self.p.getHost().port
 

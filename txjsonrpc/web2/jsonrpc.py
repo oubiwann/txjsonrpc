@@ -12,9 +12,14 @@ from twisted.python import log, reflect
 from twisted.web2 import http, http_headers, resource, responsecode, stream
 
 from txjsonrpc import jsonrpclib
+from txjsonrpc.jsonrpc import (
+    BaseSubhandler, Introspection as BaseIntrospection)
 
 
-class JSONRPC(resource.Resource):
+__all__ = ["JSONRPC", "addIntrospection"]
+
+
+class JSONRPC(resource.Resource, BaseSubhandler):
     """
     A resource that implements JSON-RPC.
 
@@ -39,16 +44,7 @@ class JSONRPC(resource.Resource):
 
     def __init__(self):
         resource.Resource.__init__(self)
-        self.subHandlers = {}
-
-    def putSubHandler(self, prefix, handler):
-        self.subHandlers[prefix] = handler
-
-    def getSubHandler(self, prefix):
-        return self.subHandlers.get(prefix, None)
-
-    def getSubHandlerPrefixes(self):
-        return self.subHandlers.keys()
+        BaseSubhandler.__init__(self)
 
     def render(self, request):
         # For GET/HEAD: Return an error message
@@ -73,7 +69,7 @@ class JSONRPC(resource.Resource):
         parser.close()
         args, functionPath = unmarshaller.close(), unmarshaller.getmethodname()
 
-        function = self.getFunction(functionPath)
+        function = self._getFunction(functionPath)
         return defer.maybeDeferred(function, request, *args)
 
     def _cbRender(self, result, request):
@@ -94,107 +90,21 @@ class JSONRPC(resource.Resource):
         log.err(failure)
         return jsonrpclib.Fault(self.FAILURE, "error")
 
-    def getFunction(self, functionPath):
-        """
-        Given a string, return a function, or raise NoSuchFunction.
 
-        This returned function will be called, and should return the result
-        of the call, a Deferred, or a Fault instance.
-
-        Override in subclasses if you want your own policy. The default
-        policy is that given functionPath 'foo', return the method at
-        self.jsonrpc_foo, i.e. getattr(self, "jsonrpc_" + functionPath).
-        If functionPath contains self.separator, the sub-handler for
-        the initial prefix is used to search for the remaining path.
-        """
-        if functionPath.find(self.separator) != -1:
-            prefix, functionPath = functionPath.split(self.separator, 1)
-            handler = self.getSubHandler(prefix)
-            if handler is None:
-                raise jsonrpclib.NoSuchFunction(self.NOT_FOUND,
-                    "no such subHandler %s" % prefix)
-            return handler.getFunction(functionPath)
-
-        f = getattr(self, "jsonrpc_%s" % functionPath, None)
-        if not f:
-            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND,
-                "function %s not found" % functionPath)
-        elif not callable(f):
-            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND,
-                "function %s not callable" % functionPath)
-        else:
-            return f
-
-    def _listFunctions(self):
-        """
-        Return a list of the names of all jsonrpc methods.
-        """
-        return reflect.prefixedMethodNames(self.__class__, 'jsonrpc_')
-
-
-class JSONRPCIntrospection(JSONRPC):
+class Introspection(BaseIntrospection):
     """
-    Implement the JSON-RPC Introspection API.
-
-    By default, the methodHelp method returns the 'help' method attribute,
-    if it exists, otherwise the __doc__ method attribute, if it exists,
-    otherwise the empty string.
-
-    To enable the methodSignature method, add a 'signature' method attribute
-    containing a list of lists. See methodSignature's documentation for the
-    format. Note the type strings should be JSON-RPC types, not Python types.
+    twisted.web2 resources get passed the request in every method, so we need
+    to adjust for that with the introepction class.
     """
-
-    def __init__(self, parent):
-        """
-        Implement Introspection support for an JSONRPC server.
-
-        @param parent: the JSONRPC server to add Introspection support to.
-        """
-
-        JSONRPC.__init__(self)
-        self._jsonrpc_parent = parent
 
     def jsonrpc_listMethods(self, request):
-        """
-        Return a list of the method names implemented by this server.
-        """
-        functions = []
-        todo = [(self._jsonrpc_parent, '')]
-        while todo:
-            obj, prefix = todo.pop(0)
-            functions.extend([ prefix + name for name in obj._listFunctions() ])
-            todo.extend([ (obj.getSubHandler(name),
-                           prefix + name + obj.separator)
-                          for name in obj.getSubHandlerPrefixes() ])
-        return functions
-
-    jsonrpc_listMethods.signature = [['array']]
+        return BaseIntrospection.jsonrpc_listMethods(self)
 
     def jsonrpc_methodHelp(self, request, method):
-        """
-        Return a documentation string describing the use of the given method.
-        """
-        method = self._jsonrpc_parent.getFunction(method)
-        return (getattr(method, 'help', None)
-                or getattr(method, '__doc__', None) or '').strip()
-
-    jsonrpc_methodHelp.signature = [['string', 'string']]
+        return BaseIntrospection.jsonrpc_methodHelp(self, method)
 
     def jsonrpc_methodSignature(self, request, method):
-        """
-        Return a list of type signatures.
-
-        Each type signature is a list of the form [rtype, type1, type2, ...]
-        where rtype is the return type and typeN is the type of the Nth
-        argument. If no signature information is available, the empty
-        string is returned.
-        """
-        method = self._jsonrpc_parent.getFunction(method)
-        return getattr(method, 'signature', None) or ''
-
-    jsonrpc_methodSignature.signature = [['array', 'string'],
-                                        ['string', 'string']]
+        return BaseIntrospection.jsonrpc_methodSignature(self, method)
 
 
 def addIntrospection(jsonrpc):
@@ -203,7 +113,4 @@ def addIntrospection(jsonrpc):
 
     @param jsonrpc: The jsonrpc server to add Introspection support to.
     """
-    jsonrpc.putSubHandler('system', JSONRPCIntrospection(jsonrpc))
-
-
-__all__ = ["JSONRPC"]
+    jsonrpc.putSubHandler('system', Introspection(jsonrpc))

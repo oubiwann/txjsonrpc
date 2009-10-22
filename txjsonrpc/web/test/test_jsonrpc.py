@@ -8,8 +8,8 @@ from twisted.trial import unittest
 from twisted.web import server, static
 
 from txjsonrpc import jsonrpclib
+from txjsonrpc.jsonrpc import addIntrospection
 from txjsonrpc.web import jsonrpc
-from txjsonrpc.web.jsonrpc import JSONRPC, addIntrospection
 
 
 class TestRuntimeError(RuntimeError):
@@ -20,7 +20,7 @@ class TestValueError(ValueError):
     pass
 
 
-class Test(JSONRPC):
+class Test(jsonrpc.JSONRPC):
 
     FAILURE = 666
     NOT_FOUND = jsonrpclib.METHOD_NOT_FOUND
@@ -76,7 +76,7 @@ class Test(JSONRPC):
 
     def _getFunction(self, functionPath):
         try:
-            return JSONRPC._getFunction(self, functionPath)
+            return jsonrpc.JSONRPC._getFunction(self, functionPath)
         except jsonrpclib.NoSuchFunction:
             if functionPath.startswith("SESSION"):
                 raise jsonrpclib.Fault(

@@ -12,7 +12,8 @@ from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 
 from txjsonrpc import jsonrpclib
-from txjsonrpc.jsonrpc import BaseProxy, BaseQueryFactory, BaseSubhandler
+from txjsonrpc.jsonrpc import (
+    BaseProxy, BaseQueryFactory, BaseSubhandler, Introspection)
 
 
 class JSONRPC(basic.NetstringReceiver, BaseSubhandler):
@@ -73,81 +74,6 @@ class JSONRPC(basic.NetstringReceiver, BaseSubhandler):
             return failure.value
         log.err(failure)
         return jsonrpclib.Fault(self.FAILURE, "error")
-
-
-class JSONRPCIntrospection(JSONRPC):
-    """
-    Implement the JSON-RPC Introspection API.
-
-    By default, the methodHelp method returns the 'help' method attribute,
-    if it exists, otherwise the __doc__ method attribute, if it exists,
-    otherwise the empty string.
-
-    To enable the methodSignature method, add a 'signature' method attribute
-    containing a list of lists. See methodSignature's documentation for the
-    format. Note the type strings should be JSON-RPC types, not Python types.
-    """
-
-    def __init__(self, parent):
-        """
-        Implement Introspection support for an JSONRPC server.
-
-        @param parent: the JSONRPC server to add Introspection support to.
-        """
-
-        JSONRPC.__init__(self)
-        self._jsonrpc_parent = parent
-
-    def jsonrpc_listMethods(self):
-        """
-        Return a list of the method names implemented by this server.
-        """
-        functions = []
-        todo = [(self._jsonrpc_parent, '')]
-        while todo:
-            obj, prefix = todo.pop(0)
-            functions.extend([ prefix + name for name in obj._listFunctions() ])
-            todo.extend([ (obj.getSubHandler(name),
-                           prefix + name + obj.separator)
-                          for name in obj.getSubHandlerPrefixes() ])
-        functions.sort()
-        return functions
-
-    jsonrpc_listMethods.signature = [['array']]
-
-    def jsonrpc_methodHelp(self, method):
-        """
-        Return a documentation string describing the use of the given method.
-        """
-        method = self._jsonrpc_parent._getFunction(method)
-        return (getattr(method, 'help', None)
-                or getattr(method, '__doc__', None) or '').strip()
-
-    jsonrpc_methodHelp.signature = [['string', 'string']]
-
-    def jsonrpc_methodSignature(self, method):
-        """
-        Return a list of type signatures.
-
-        Each type signature is a list of the form [rtype, type1, type2, ...]
-        where rtype is the return type and typeN is the type of the Nth
-        argument. If no signature information is available, the empty
-        string is returned.
-        """
-        method = self._jsonrpc_parent._getFunction(method)
-        return getattr(method, 'signature', None) or ''
-
-    jsonrpc_methodSignature.signature = [['array', 'string'],
-                                        ['string', 'string']]
-
-
-def addIntrospection(jsonrpc):
-    """
-    Add Introspection support to an JSONRPC server.
-
-    @param jsonrpc: The jsonrpc server to add Introspection support to.
-    """
-    jsonrpc.putSubHandler('system', JSONRPCIntrospection, ('protocol',))
 
 
 class QueryProtocol(basic.NetstringReceiver):
@@ -238,7 +164,7 @@ class RPCFactory(protocol.ServerFactory):
         self.subHandlers[name] = (klass, args, kws)
 
     def addIntrospection(self):
-        self.putSubHandler('system', JSONRPCIntrospection, ('protocol',))
+        self.putSubHandler('system', Introspection, ('protocol',))
 
 
 __all__ = ["JSONRPC", "Proxy", "RPCFactory"]

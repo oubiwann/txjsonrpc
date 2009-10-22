@@ -113,7 +113,7 @@ def _v1Request(method="", params=[], id="", *args):
 
 
 def _v1Notification(method="", params=[], *args):
-    return _v1Request(method=method, params=param, id=None)
+    return _v1Request(method=method, params=params, id=None)
 
 
 def _v2Request(method="", params=[], id="", *args):
@@ -122,7 +122,7 @@ def _v2Request(method="", params=[], id="", *args):
 
 
 def _v2Notification(method="", params=[], *args):
-    return _v2Request(method=method, params=param, id=None)
+    return _v2Request(method=method, params=params, id=None)
 
 
 class ServerProxy(xmlrpclib.ServerProxy):

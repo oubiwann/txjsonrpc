@@ -12,10 +12,10 @@ from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 
 from txjsonrpc import jsonrpclib
-from txjsonrpc.jsonrpc import BaseProxy, BaseQueryFactory
+from txjsonrpc.jsonrpc import BaseProxy, BaseQueryFactory, BaseSubhandler
 
 
-class JSONRPC(basic.NetstringReceiver):
+class JSONRPC(basic.NetstringReceiver, BaseSubhandler):
     """
     A protocol that implements JSON-RPC.
     
@@ -23,10 +23,6 @@ class JSONRPC(basic.NetstringReceiver):
     Binary, Boolean, DateTime, Deferreds, or Handler instances.
 
     By default methods beginning with 'jsonrpc_' are published.
-
-    Sub-handlers for prefixed methods (e.g., system.listMethods)
-    can be added with putSubHandler. By default, prefixes are
-    separated with a '.'. Override self.separator to change this.
     """
     # Error codes for Twisted, if they conflict with yours then
     # modify them at runtime.
@@ -36,23 +32,11 @@ class JSONRPC(basic.NetstringReceiver):
     separator = '.'
     closed = 0
 
-    def __init__(self):
-        self.subHandlers = {}
-
     def __call__(self):
         return self
 
     def connectionMade(self):
         self.MAX_LENGTH = self.factory.maxLength
-
-    def putSubHandler(self, prefix, handler):
-        self.subHandlers[prefix] = handler
-
-    def getSubHandler(self, prefix):
-        return self.subHandlers.get(prefix, None)
-
-    def getSubHandlerPrefixes(self):
-        return self.subHandlers.keys()
 
     def stringReceived(self, line):
         parser, unmarshaller = jsonrpclib.getparser()
@@ -66,7 +50,7 @@ class JSONRPC(basic.NetstringReceiver):
     def _cbDispatch(self, parser, unmarshaller):
         parser.close()
         args, functionPath = unmarshaller.close(), unmarshaller.getmethodname()
-        function = self.getFunction(functionPath)
+        function = self._getFunction(functionPath)
         return defer.maybeDeferred(function, *args)
 
     def _cbRender(self, result):
@@ -89,43 +73,6 @@ class JSONRPC(basic.NetstringReceiver):
             return failure.value
         log.err(failure)
         return jsonrpclib.Fault(self.FAILURE, "error")
-
-    def getFunction(self, functionPath):
-        """
-        Given a string, return a function, or raise NoSuchFunction.
-
-        This returned function will be called, and should return the result
-        of the call, a Deferred, or a Fault instance.
-
-        Override in subclasses if you want your own policy. The default
-        policy is that given functionPath 'foo', return the method at
-        self.jsonrpc_foo, i.e. getattr(self, "jsonrpc_" + functionPath).
-        If functionPath contains self.separator, the sub-handler for
-        the initial prefix is used to search for the remaining path.
-        """
-        if functionPath.find(self.separator) != -1:
-            prefix, functionPath = functionPath.split(self.separator, 1)
-            handler = self.getSubHandler(prefix)
-            if handler is None:
-                raise jsonrpclib.NoSuchFunction(self.NOT_FOUND, 
-                    "no such subHandler %s" % prefix)
-            return handler.getFunction(functionPath)
-
-        f = getattr(self, "jsonrpc_%s" % functionPath, None)
-        if not f:
-            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND, 
-                "function %s not found" % functionPath)
-        elif not callable(f):
-            raise jsonrpclib.NoSuchFunction(self.NOT_FOUND, 
-                "function %s not callable" % functionPath)
-        else:
-            return f
-
-    def _listFunctions(self):
-        """
-        Return a list of the names of all jsonrpc methods.
-        """
-        return reflect.prefixedMethodNames(self.__class__, 'jsonrpc_')
 
 
 class JSONRPCIntrospection(JSONRPC):
@@ -172,7 +119,7 @@ class JSONRPCIntrospection(JSONRPC):
         """
         Return a documentation string describing the use of the given method.
         """
-        method = self._jsonrpc_parent.getFunction(method)
+        method = self._jsonrpc_parent._getFunction(method)
         return (getattr(method, 'help', None)
                 or getattr(method, '__doc__', None) or '').strip()
 
@@ -187,7 +134,7 @@ class JSONRPCIntrospection(JSONRPC):
         argument. If no signature information is available, the empty
         string is returned.
         """
-        method = self._jsonrpc_parent.getFunction(method)
+        method = self._jsonrpc_parent._getFunction(method)
         return getattr(method, 'signature', None) or ''
 
     jsonrpc_methodSignature.signature = [['array', 'string'],

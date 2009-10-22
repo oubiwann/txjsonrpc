@@ -23,7 +23,7 @@ class TestValueError(ValueError):
 class Test(JSONRPC):
 
     FAILURE = 666
-    NOT_FOUND = 23
+    NOT_FOUND = jsonrpclib.METHOD_NOT_FOUND
     SESSION_EXPIRED = 42
 
     def jsonrpc_add(self, a, b):

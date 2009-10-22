@@ -8,6 +8,10 @@ build.
 parameter in the constructor as well as in the callRemote method.
 * Updated license file with more recent copyright info.
 * Added an exmaple for web client.
+* Updated netstring JSON-RPC with support for version parameters in contructor
+and callRemote.
+* Added a jsonrpc module for abstracting base-classes and removing redundancy
+between the three JSON-RPC implementations.
 
 2009.11.20
 

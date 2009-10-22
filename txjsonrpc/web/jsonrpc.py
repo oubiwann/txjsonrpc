@@ -15,11 +15,12 @@ import urlparse
 import xmlrpclib
 
 from twisted.web import resource, server
-from twisted.internet import defer, protocol, reactor
+from twisted.internet import defer, reactor
 from twisted.python import log, reflect
 from twisted.web import http
 
 from txjsonrpc import jsonrpclib
+from txjsonrpc.jsonrpc import BaseQueryFactory
 
 
 # Useful so people don't need to import xmlrpclib directly.
@@ -269,37 +270,23 @@ class QueryProtocol(http.HTTPClient):
         self.factory.parseResponse(contents)
 
 
-class QueryFactory(protocol.ClientFactory):
+class QueryFactory(BaseQueryFactory):
 
     deferred = None
     protocol = QueryProtocol
 
     def __init__(self, path, host, method, user=None, password=None,
                  version=jsonrpclib.VERSION_PRE1, *args):
+        BaseQueryFactory.__init__(self, method, version, *args)
         self.path, self.host = path, host
         self.user, self.password = user, password
-        # pass the method name and JSON-RPC args (converted from python)
-        # into the template
-        self.payload = self._buildVersionedPayload(version, method, args)
-        self.deferred = defer.Deferred()
-
-    def _buildVersionedPayload(self, version, *args):
-        if version == jsonrpclib.VERSION_PRE1:
-            return jsonrpclib._preV1Request(*args)
-        elif version == jsonrpclib.VERSION_1:
-            return jsonrpclib._v1Request(*args)
-        elif version == jsonrpclib.VERSION_2:
-            return jsonrpclib._v2Request(*args)
 
     def parseResponse(self, contents):
         if not self.deferred:
             return
         try:
-            # convert the response from JSON-RPC to python
-            #print "Python type of response contents: %s" % type(contents)
-            #print "Response contents: %s" % contents
+            # Convert the response from JSON-RPC to python.
             response = jsonrpclib.loads(contents)
-            #print "Parsed contents: %s" % response
             if isinstance(response, list):
                 response = response[0]
         except Exception, error:

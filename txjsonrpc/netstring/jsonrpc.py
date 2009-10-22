@@ -12,6 +12,7 @@ from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 
 from txjsonrpc import jsonrpclib
+from txjsonrpc.jsonrpc import BaseQueryFactory
 
 
 class JSONRPC(basic.NetstringReceiver):
@@ -215,19 +216,10 @@ class QueryProtocol(basic.NetstringReceiver):
         self.transport.loseConnection()
 
 
-class QueryFactory(protocol.ClientFactory):
+class QueryFactory(BaseQueryFactory):
 
-    deferred = None
     protocol = QueryProtocol
     data = ''
-
-    def __init__(self, method, *args):
-        # Pass the method name and JSON-RPC args (converted from python)
-        # into the template.
-        self.payload = jsonrpclib.dumps({
-            'method':method, 
-            'params':args})
-        self.deferred = defer.Deferred()
 
     def parseResponse(self, contents):
         if not self.deferred:
@@ -272,23 +264,39 @@ class Proxy:
     'foobar' with *args.
     """
 
-    def __init__(self, host, port, factoryClass=QueryFactory):
+    def __init__(self, host, port, version=jsonrpclib.VERSION_PRE1,
+                 factoryClass=QueryFactory):
         """
         @type host: C{str}
         @param host: The host to which method calls are made.
 
         @type port: C{integer}
         @param port: The host's port to which method calls are made.
+
+        @type version: C{int}
+        @param version: The version indicates which JSON-RPC spec to support.
+        The available choices are jsonrpclib.VERSION*. The default is to use
+        the version of the spec that txJSON-RPC was originally released with,
+        pre-Version 1.0.
+
+        @type factoryClass: C{object}
+        @param factoryClass: The factoryClass should be a subclass of
+        QueryFactory (class, not instance) that will be used instead of
+        QueryFactory.
         """
         self.host = host
         self.port = port
+        self.version = version
         self.factoryClass = factoryClass
 
     def callRemote(self, method, *args, **kwargs):
         factoryClass = kwargs.get("factoryClass")
         if not factoryClass:
             factoryClass = self.factoryClass
-        factory = factoryClass(method, *args)
+        version = kwargs.get("version")
+        if version == None:
+            version = self.version
+        factory = factoryClass(method, version, *args)
         reactor.connectTCP(self.host, self.port, factory)
         return factory.deferred
 

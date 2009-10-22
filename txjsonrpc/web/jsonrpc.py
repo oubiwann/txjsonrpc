@@ -20,7 +20,7 @@ from twisted.python import log, reflect
 from twisted.web import http
 
 from txjsonrpc import jsonrpclib
-from txjsonrpc.jsonrpc import BaseQueryFactory
+from txjsonrpc.jsonrpc import BaseProxy, BaseQueryFactory
 
 
 # Useful so people don't need to import xmlrpclib directly.
@@ -311,7 +311,7 @@ class QueryFactory(BaseQueryFactory):
         self.deferred = None
 
 
-class Proxy:
+class Proxy(BaseProxy):
     """
     A Proxy for making remote JSON-RPC calls.
 
@@ -322,7 +322,7 @@ class Proxy:
     """
 
     def __init__(self, url, user=None, password=None,
-                 version=jsonrpclib.VERSION_PRE1):
+                 version=jsonrpclib.VERSION_PRE1, factoryClass=QueryFactory):
         """
         @type url: C{str}
         @param url: The URL to which to post method calls.  Calls will be made
@@ -348,7 +348,7 @@ class Proxy:
         the version of the spec that txJSON-RPC was originally released with,
         pre-Version 1.0.
         """
-        self.version = version
+        BaseProxy.__init__(self, version, factoryClass)
         scheme, netloc, path, params, query, fragment = urlparse.urlparse(url)
         netlocParts = netloc.split('@')
         if len(netlocParts) == 2:
@@ -376,10 +376,9 @@ class Proxy:
             self.password = password
 
     def callRemote(self, method, *args, **kwargs):
-        version = kwargs.get("version")
-        if version == None:
-            version = self.version
-        factory = QueryFactory(self.path, self.host, method, self.user,
+        version = self._getVersion(kwargs)
+        factoryClass = self._getFactoryClass(kwargs)
+        factory = factoryClass(self.path, self.host, method, self.user,
             self.password, version, *args)
         if self.secure:
             from twisted.internet import ssl

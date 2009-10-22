@@ -12,7 +12,7 @@ from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 
 from txjsonrpc import jsonrpclib
-from txjsonrpc.jsonrpc import BaseQueryFactory
+from txjsonrpc.jsonrpc import BaseProxy, BaseQueryFactory
 
 
 class JSONRPC(basic.NetstringReceiver):
@@ -254,7 +254,7 @@ class QueryFactory(BaseQueryFactory):
         self.deferred = None
 
 
-class Proxy:
+class Proxy(BaseProxy):
     """
     A Proxy for making remote JSON-RPC calls.
 
@@ -284,18 +284,14 @@ class Proxy:
         QueryFactory (class, not instance) that will be used instead of
         QueryFactory.
         """
+        BaseProxy.__init__(self, version, factoryClass)
         self.host = host
         self.port = port
-        self.version = version
-        self.factoryClass = factoryClass
+
 
     def callRemote(self, method, *args, **kwargs):
-        factoryClass = kwargs.get("factoryClass")
-        if not factoryClass:
-            factoryClass = self.factoryClass
-        version = kwargs.get("version")
-        if version == None:
-            version = self.version
+        version = self._getVersion(kwargs)
+        factoryClass = self._getFactoryClass(kwargs)
         factory = factoryClass(method, version, *args)
         reactor.connectTCP(self.host, self.port, factory)
         return factory.deferred

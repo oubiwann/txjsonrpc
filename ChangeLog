@@ -12,6 +12,7 @@ parameter in the constructor as well as in the callRemote method.
 and callRemote.
 * Added a jsonrpc module for abstracting base-classes and removing redundancy
 between the three JSON-RPC implementations.
+* Added a BaseProxy class.
 
 2009.11.20
 

@@ -1,6 +1,7 @@
 2009.11.06
 
 * Reverted trunk to pre-version-work point.
+* Cherry-picked the change that added missing deferred returns in two tests.
 
 2009.10.20
 

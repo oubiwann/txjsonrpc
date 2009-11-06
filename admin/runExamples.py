@@ -8,7 +8,6 @@ from time import sleep
 examples = [
     ("tcp/client.py", "tcp/server.tac"),
     ("tcp/client_subhandled.py", "tcp/server_subhandled.tac"),
-    ("web/client.py", "web/server.tac"),
     ("web2/client.py", "web2/server.tac"),
     ]
 
@@ -22,12 +21,7 @@ expectedResults = [
     Result: bite me
     Shutting down reactor...
     """,
-    """
-    Result: 8
-    Result: bite me
-    Shutting down reactor...
-    """,
-    "Result: 8",
+    "8",
     ]
 
 
@@ -42,7 +36,7 @@ for example, expectedResult in zip(examples, expectedResults):
     # start server
     command = "twistd -l /dev/null -noy %s" % os.path.join("examples", server)
     pid = Popen(command, shell=True).pid
-    sleep(1)
+    sleep(2)
     # run client
     command = "python %s" % os.path.join("examples", client)
     process = Popen(command, shell=True, stdout=PIPE)

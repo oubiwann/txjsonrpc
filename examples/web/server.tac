@@ -3,7 +3,6 @@ from twisted.application import service, internet
 
 from txjsonrpc.web import jsonrpc
 
-
 class Example(jsonrpc.JSONRPC):
     """
     An example object to be published.
@@ -15,7 +14,6 @@ class Example(jsonrpc.JSONRPC):
         """Return all passed args."""
         return x
 
-
 class Math(jsonrpc.JSONRPC):
     """
     An example subhandler.
@@ -23,7 +21,6 @@ class Math(jsonrpc.JSONRPC):
     def jsonrpc_add(self, a, b):
         """Return sum of arguments."""
         return a + b
-
 
 application = service.Application("Example JSON-RPC Server")
 root = Example()

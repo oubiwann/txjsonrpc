@@ -7,10 +7,9 @@ from twisted.internet import reactor, defer
 from twisted.trial import unittest
 
 from txjsonrpc import jsonrpclib
-from txjsonrpc.jsonrpc import addIntrospection
 from txjsonrpc.netstring import jsonrpc
 from txjsonrpc.netstring.jsonrpc import (
-    JSONRPC, Proxy, QueryFactory)
+    addIntrospection, JSONRPC, Proxy, QueryFactory)
 
 
 class TestRuntimeError(RuntimeError):
@@ -24,7 +23,8 @@ class TestValueError(ValueError):
 class Test(JSONRPC):
 
     FAILURE = 666
-    NOT_FOUND = jsonrpclib.METHOD_NOT_FOUND
+    NOT_FOUND = 23
+    SESSION_EXPIRED = 42
 
     addSlash = True
     
@@ -74,7 +74,13 @@ class Test(JSONRPC):
         return map[key]
 
     def getFunction(self, functionPath):
-        return JSONRPC.getFunction(self, functionPath)
+        try:
+            return JSONRPC.getFunction(self, functionPath)
+        except jsonrpclib.NoSuchFunction:
+            if functionPath.startswith("SESSION"):
+                raise jsonrpclib.Fault(self.SESSION_EXPIRED, "Session non-existant/expired.")
+            else:
+                raise
 
     jsonrpc_dict.help = 'Help for dict.'
 
@@ -125,8 +131,8 @@ class JSONRPCTestCase(unittest.TestCase):
 
         dl = []
         for code, methodName in [(666, "fail"), (666, "deferFail"),
-                                 (12, "fault"), (-32601, "noSuchMethod"),
-                                 (17, "deferFault"), (-32601, "SESSION_TEST")]:
+                                 (12, "fault"), (23, "noSuchMethod"),
+                                 (17, "deferFault"), (42, "SESSION_TEST")]:
             d = self.proxy().callRemote(methodName)
             d = self.assertFailure(d, jsonrpclib.Fault)
             d.addCallback(
@@ -164,7 +170,7 @@ class JSONRPCClassMaxLengthTestCase(JSONRPCTestCase):
 
         d = JSONRPCTestCase.testResults(self)
         d.addCallback(checkMaxLength)
-        return d
+
 
 
 class JSONRPCMethodMaxLengthTestCase(JSONRPCTestCase):
@@ -204,14 +210,14 @@ class JSONRPCMethodMaxLengthTestCase(JSONRPCTestCase):
             dl.append(d)
         d = defer.DeferredList(dl, fireOnOneErrback=True)
         d.addCallback(checkMaxLength)
-        return d
 
 
 class JSONRPCTestIntrospection(JSONRPCTestCase):
 
     def setUp(self):
         server = jsonrpc.RPCFactory(Test)
-        server.addIntrospection()
+        addIntrospection(server)
+        #server.addIntrospection()
         self.p = reactor.listenTCP(0, server, interface="127.0.0.1")
         self.port = self.p.getHost().port
 

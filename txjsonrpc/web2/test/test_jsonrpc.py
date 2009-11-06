@@ -8,8 +8,12 @@ from twisted.trial import unittest
 from twisted.web2 import server
 from twisted.web2.channel import http
 
+try:
+    from txjsonrpc.web.jsonrpc import Proxy
+except ImportError:
+    Proxy = None
+
 from txjsonrpc import jsonrpclib
-from txjsonrpc.web.jsonrpc import Proxy
 from txjsonrpc.web2.jsonrpc import JSONRPC, addIntrospection
 
 
@@ -24,7 +28,7 @@ class TestValueError(ValueError):
 class Test(JSONRPC):
 
     FAILURE = 666
-    NOT_FOUND = jsonrpclib.METHOD_NOT_FOUND
+    NOT_FOUND = 23
     SESSION_EXPIRED = 42
 
     addSlash = True
@@ -88,6 +92,9 @@ class Test(JSONRPC):
 
 class JSONRPCTestCase(unittest.TestCase):
     
+    if not Proxy:
+        skip = "Until web2 has an XML-RPC client, this test requires twisted.web."
+
     def setUp(self):
         self.p = reactor.listenTCP(0, http.HTTPFactory(server.Site(Test())),
                                    interface="127.0.0.1")
@@ -117,8 +124,8 @@ class JSONRPCTestCase(unittest.TestCase):
     def testErrors(self):
         dl = []
         for code, methodName in [(666, "fail"), (666, "deferFail"),
-                                 (12, "fault"), (-32601, "noSuchMethod"),
-                                 (17, "deferFault"), (-32601, "SESSION_TEST")]:
+                                 (12, "fault"), (23, "noSuchMethod"),
+                                 (17, "deferFault"), (42, "SESSION_TEST")]:
             d = self.proxy().callRemote(methodName)
             d = self.assertFailure(d, jsonrpclib.Fault)
             d.addCallback(lambda exc, code=code: self.assertEquals(exc.faultCode, code))

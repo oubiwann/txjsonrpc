@@ -3,7 +3,7 @@ from twisted.internet import reactor
 from txjsonrpc.web.jsonrpc import Proxy
 
 def printValue(value):
-    print "Result: %s" % str(value)
+    print repr(value)
     reactor.stop()
 
 def printError(error):

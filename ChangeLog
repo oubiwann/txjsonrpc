@@ -1,35 +1,8 @@
-2009.11.22
+2009.11.06
 
-* Added support for version 1.0 of the JSON-RPC spec to jsonrpclib.
-* Finished the pre-version 1.0 spec.
-* Updated the version 1.0 spec with response examples.
+* Reverted trunk to pre-version-work point.
 
-2009.11.21
-
-* Updated the QueryFactory to take a version parameter in the constructor.
-* Added a payload creator that uses the version to determine which payload to
-build.
-* Changed the constructor to use a new private method for creating the payload.
-* Changed the async Proxy classes in web and netstring to accept a version
-parameter in the constructor as well as in the callRemote method.
-* Updated license file with more recent copyright info.
-* Added an exmaple for web client.
-* Updated netstring JSON-RPC with support for version parameters in contructor
-and callRemote.
-* Added a jsonrpc module for abstracting base-classes and removing redundancy
-between the three JSON-RPC implementations.
-* Added a BaseProxy class.
-* Import cleanup.
-* Moved more common methods into the base query factory class.
-* Created a BaseSubhandler subclass for http and netstring RPC classes.
-* Removed session code from netstring RPC test.
-* Moved introspection into base module.
-* Changed introspection to behave like a mixin instead of a subclass.
-* Updated JSON-RPC web2 to use new base classes.
-* Updated JSON-RPC web2's Introspection class to use the base introspection
-class.
-
-2009.11.20
+2009.10.20
 
 * Added clean.sh admin script.
 * Cleaned up TODO file.
@@ -56,17 +29,6 @@ override.
 * Formatting tweaks.
 * Updated TODO and README.
 * Added admin upload script.
-* Added placeholders for version spec files.
-* Added missing deferred returns in two tests.
-* Added testing helper subpackage.
-* Added doctest runner.
-* Added manifest file.
-* Updated the commit script to run the doctest runner.
-* Added headings to the spec files.
-* Added request info to the specs.
-* Added versioned request functions to jsonrpclib.py and updated the
-ServerProxy with a version-sensitive dispatcher.
-* Removed non-pertinent sections from pre-version 1 spec.
 
 2008.11.10
 

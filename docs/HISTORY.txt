@@ -2,14 +2,6 @@
 Changes
 =======
 
-txJSON-RPC 0.4.0
-----------------
-
-* Added support for versions 1.0 and 2.0 of the JSON-RPC spec.
-
-* An intensive refactoring took place, which removed much redundant code.
-
-
 txJSON-RPC 0.3.0
 ----------------
 
@@ -21,30 +13,25 @@ txJSON-RPC 0.3.0
 
 * Improved documentation.
 
-
 txJSON-RPC 0.2.0
 ----------------
 
 * Added a datetime serializer.
-
 
 txJSON-RPC 0.1.0
 ----------------
 
 * Bug fix from Moshe Zadka for SimpleParser and long replies.
 
-
 txJSON-RPC 0.0.5
 ----------------
 
 * SimpleParser bug fix, improved code abstractions.
 
-
 Twisted-JSONRPC 0.0.4
 ---------------------
 
 * Changed name in accord with Twisted community projects recommendations.
-
 
 Twisted-JSONRPC 0.0.3
 ---------------------
@@ -52,12 +39,10 @@ Twisted-JSONRPC 0.0.3
 * Includes support for Twisted JSON-RPC servers/clients over TCP by means of
   the Netstring protocol.
 
-
 Twisted-JSONRPC 0.0.2
 ---------------------
 
 * Includes support for twisted.web2 JSON-RPC servers over HTTP.
-
 
 Twisted-JSONRPC 0.0.1
 ---------------------

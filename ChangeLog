@@ -4,6 +4,7 @@
 * Cherry-picked the change that added missing deferred returns in two tests.
 * Cherry-picked the change that added the testing helper subpackage.
 * Cherry-picked the change that added the doctest runner.
+* Cherry-picked changes to the examples and updated the example-runner.
 
 2009.10.20
 

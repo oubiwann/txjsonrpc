@@ -2,6 +2,8 @@
 
 * Reverted trunk to pre-version-work point.
 * Cherry-picked the change that added missing deferred returns in two tests.
+* Cherry-picked the change that added the testing helper subpackage.
+* Cherry-picked the change that added the doctest runner.
 
 2009.10.20
 

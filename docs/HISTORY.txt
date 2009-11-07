@@ -2,6 +2,12 @@
 Changes
 =======
 
+txJSON-RPC 0.4.0
+----------------
+
+* Added basic authentication infrastructure support for easy setup of protected
+  RPC resources.
+
 txJSON-RPC 0.3.0
 ----------------
 

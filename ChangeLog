@@ -1,9 +1,18 @@
+2009.11.07
+
+* Added authentication support with cred for twisted.web2-based JSON-RPC
+reources.
+* Updated history file.
+
 2009.11.06
 
 * Reverted trunk to pre-version-work point.
 * Cherry-picked the change that added missing deferred returns in two tests.
 * Cherry-picked the change that added the testing helper subpackage.
 * Cherry-picked the change that added the doctest runner.
+* Cherry-picked changes to the examples and updated the example-runner.
+* Added authentication infrasturcture so that twisted.web-based txJSON-RPC
+servers can be written to support twisted.cred.
 
 2009.10.20
 

@@ -5,6 +5,8 @@
 * Cherry-picked the change that added the testing helper subpackage.
 * Cherry-picked the change that added the doctest runner.
 * Cherry-picked changes to the examples and updated the example-runner.
+* Added authentication infrasturcture so that twisted.web-based txJSON-RPC
+servers can be written to support twisted.cred.
 
 2009.10.20
 

@@ -14,10 +14,13 @@ from __future__ import nested_scopes
 import urlparse
 import xmlrpclib
 
+from zope.interface import implements
+
 from twisted.web import resource, server
 from twisted.internet import defer, protocol, reactor
 from twisted.python import log, reflect
 from twisted.web import http
+from twisted.web.resource import IResource
 
 from txjsonrpc import jsonrpclib
 
@@ -83,6 +86,8 @@ class JSONRPC(resource.Resource):
 
     isLeaf = 1
     separator = '.'
+
+    implements(IResource)
 
     def __init__(self):
         resource.Resource.__init__(self)

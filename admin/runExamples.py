@@ -10,6 +10,7 @@ examples = [
     ("tcp/client_subhandled.py", "tcp/server_subhandled.tac"),
     ("web/client.py", "web/server.tac"),
     ("web2/client.py", "web2/server.tac"),
+    ("webAuth/client.py", "webAuth/server.tac"),
     ]
 
 
@@ -28,6 +29,13 @@ expectedResults = [
     Shutting down reactor...
     """,
     "Result: 8",
+    """
+    Unauthorized
+    Unauthorized
+    Result: 8
+    Result: bite me
+    Shutting down reactor...
+    """
     ]
 
 
@@ -42,7 +50,7 @@ for example, expectedResult in zip(examples, expectedResults):
     # start server
     command = "twistd -l /dev/null -noy %s" % os.path.join("examples", server)
     pid = Popen(command, shell=True).pid
-    sleep(2)
+    sleep(0.5)
     # run client
     command = "python %s" % os.path.join("examples", client)
     process = Popen(command, shell=True, stdout=PIPE)

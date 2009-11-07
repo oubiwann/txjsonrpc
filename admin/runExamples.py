@@ -11,6 +11,7 @@ examples = [
     ("web/client.py", "web/server.tac"),
     ("web2/client.py", "web2/server.tac"),
     ("webAuth/client.py", "webAuth/server.tac"),
+    ("web2Auth/client.py", "web2Auth/server.tac"),
     ]
 
 
@@ -29,6 +30,13 @@ expectedResults = [
     Shutting down reactor...
     """,
     "Result: 8",
+    """
+    Unauthorized
+    Unauthorized
+    Result: 8
+    Result: bite me
+    Shutting down reactor...
+    """,
     """
     Unauthorized
     Unauthorized

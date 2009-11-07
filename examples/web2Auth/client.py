@@ -20,24 +20,24 @@ def shutDown(data):
     reactor.stop()
 
 
-proxyUnauth = Proxy('http://127.0.0.1:6969/')
+proxyUnauth = Proxy('http://127.0.0.1:7080/')
 dl = []
 
 d = proxyUnauth.callRemote('echo', 'bite me')
 d.addCallbacks(printValue, printError)
 dl.append(d)
 
-d = proxyUnauth.callRemote('math.add', 3, 5)
+d = proxyUnauth.callRemote('add', 3, 5)
 d.addCallbacks(printValue, printError)
 dl.append(d)
 
-proxyAuth = Proxy('http://bob:p4ssw0rd@127.0.0.1:6969/')
+proxyAuth = Proxy('http://bob:p4ssw0rd@127.0.0.1:7080/')
 
 d = proxyAuth.callRemote('echo', 'bite me')
 d.addCallbacks(printValue, printError)
 dl.append(d)
 
-d = proxyAuth.callRemote('math.add', 3, 5)
+d = proxyAuth.callRemote('add', 3, 5)
 d.addCallbacks(printValue, printError)
 dl.append(d)
 

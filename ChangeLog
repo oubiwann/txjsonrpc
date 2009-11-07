@@ -2,6 +2,7 @@
 
 * Added authentication support with cred for twisted.web2-based JSON-RPC
 reources.
+* Updated history file.
 
 2009.11.06
 

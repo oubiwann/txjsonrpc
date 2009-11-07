@@ -8,7 +8,10 @@ from time import sleep
 examples = [
     ("tcp/client.py", "tcp/server.tac"),
     ("tcp/client_subhandled.py", "tcp/server_subhandled.tac"),
+    ("web/client.py", "web/server.tac"),
     ("web2/client.py", "web2/server.tac"),
+    ("webAuth/client.py", "webAuth/server.tac"),
+    ("web2Auth/client.py", "web2Auth/server.tac"),
     ]
 
 
@@ -21,7 +24,26 @@ expectedResults = [
     Result: bite me
     Shutting down reactor...
     """,
-    "8",
+    """
+    Result: 8
+    Result: bite me
+    Shutting down reactor...
+    """,
+    "Result: 8",
+    """
+    Unauthorized
+    Unauthorized
+    Result: 8
+    Result: bite me
+    Shutting down reactor...
+    """,
+    """
+    Unauthorized
+    Unauthorized
+    Result: 8
+    Result: bite me
+    Shutting down reactor...
+    """
     ]
 
 
@@ -36,7 +58,7 @@ for example, expectedResult in zip(examples, expectedResults):
     # start server
     command = "twistd -l /dev/null -noy %s" % os.path.join("examples", server)
     pid = Popen(command, shell=True).pid
-    sleep(2)
+    sleep(0.5)
     # run client
     command = "python %s" % os.path.join("examples", client)
     process = Popen(command, shell=True, stdout=PIPE)

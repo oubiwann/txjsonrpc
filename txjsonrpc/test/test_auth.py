@@ -1,10 +1,37 @@
 import os
 
-from zope.interface import Interface 
+from zope.interface import Interface
 
-from twisted.trial.unittest import TestCase
+from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
+from twisted.trial.unittest import SkipTest, TestCase
 
-from txjsonrpc.auth import HTTPAuthRealm
+from txjsonrpc.auth import HTTPAuthRealm, wrapResource
+
+
+def removeCompiled(filename):
+    if filename.endswith(".pyc") or filename.endswith(".pyo"):
+        if os.path.exists(filename):
+            os.unlink(filename)
+
+
+def getTwistedWeb():
+    try:
+        from twisted import web
+        if hasattr(web, "__file__"):
+            removeCompiled(web.__file__)
+    except ImportError:
+        web = None
+    return web
+
+
+def getTwistedWeb2():
+    try:
+        from twisted import web2
+        if hasattr(web2, "__file__"):
+            removeCompiled(web2.__file__)
+    except ImportError:
+        web2 = None
+    return web2
 
 
 class ImportTestCase(TestCase):
@@ -25,28 +52,13 @@ class ImportTestCase(TestCase):
         else:
             twisted.web2 = self.original_twisted_web2
 
-    def removeCompiled(self, filename):
-        if filename.endswith(".pyc") or filename.endswith(".pyo"):
-            if os.path.exists(filename):
-                os.unlink(filename)
-
     def getTwistedWeb(self):
-        try:
-            from twisted import web
-            if hasattr(web, "__file__"):
-                self.removeCompiled(web.__file__)
-        except ImportError:
-            web = None
+        web = getTwistedWeb()
         self.original_twisted_web = web
         return web
 
     def getTwistedWeb2(self):
-        try:
-            from twisted import web2
-            if hasattr(web2, "__file__"):
-                self.removeCompiled(web2.__file__)
-        except ImportError:
-            web2 = None
+        web2 = getTwistedWeb2()
         self.original_twisted_web2 = web2
         return web2
 
@@ -128,4 +140,24 @@ class HTTPAuthRealmTestCase(TestCase):
 
 
 class WrapResourceTestCase(TestCase):
-    pass
+
+    def setUp(self):
+        self.checker = InMemoryUsernamePasswordDatabaseDontUse()
+        self.checker.addUser("joe", "blow")
+
+    def test_wrapResourceWeb(self):
+        if not getTwistedWeb():
+            raise SkipTest("This test requires both twisted.web.")
+        from twisted.web.resource import IResource, Resource
+        root = Resource()
+        wrapped = wrapResource(root, [self.checker])
+        self.assertTrue(IResource.providedBy(wrapped))
+
+    def test_wrapResourceWeb2(self):
+        if not getTwistedWeb2():
+            raise SkipTest("This test requires both twisted.web2.")
+        from twisted.web2.iweb import IResource
+        from twisted.web2.resource import Resource
+        root = Resource()
+        wrapped = wrapResource(root, [self.checker])
+        self.assertTrue(IResource.providedBy(wrapped))

@@ -32,6 +32,8 @@ class HTTPAuthRealm(object):
 
 def _wrapTwistedWebResource(resource, checkers, credFactories=[],
                             realmName=""):
+    if not web:
+        raise ImportError("twisted.web does not seem to be installed.")
     from twisted.web import guard
 
     defaultCredFactory = guard.BasicCredentialFactory(realmName)
@@ -43,6 +45,8 @@ def _wrapTwistedWebResource(resource, checkers, credFactories=[],
 
 def _wrapTwistedWeb2Resource(resource, checkers, credFactories=[],
                             realmName=""):
+    if not web2:
+        raise ImportError("twisted.web2 does not seem to be installed.")
     from twisted.web2.auth import basic
     from twisted.web2.auth import wrapper
 
@@ -56,8 +60,6 @@ def _wrapTwistedWeb2Resource(resource, checkers, credFactories=[],
 
 
 def wrapResource(resource, *args, **kwargs):
-    from twisted import web, web2
-
     if web.resource.IResource.providedBy(resource):
         return _wrapTwistedWebResource(resource, *args, **kwargs)
     elif web2.iweb.IResource.providedBy(resource):

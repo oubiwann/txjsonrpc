@@ -3,6 +3,7 @@
 * Added import checks in auth.py.
 * Added test case for auth imports.
 * Fixed up the import unit tests with reloads.
+* Added unit tests for realm test case.
 
 2009.11.07
 

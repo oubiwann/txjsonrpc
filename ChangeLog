@@ -1,8 +1,14 @@
+2009.11.08
+
+* Added import checks in auth.py.
+* Added test case for auth imports.
+
 2009.11.07
 
 * Added authentication support with cred for twisted.web2-based JSON-RPC
 reources.
 * Updated history file.
+* Added test case for auth imports.
 
 2009.11.06
 

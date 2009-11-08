@@ -4,6 +4,8 @@
 * Added test case for auth imports.
 * Fixed up the import unit tests with reloads.
 * Added unit tests for realm test case.
+* Restructured the get* methods for the web and web2 modules.
+* Added unit tests for wrapped resource test case.
 
 2009.11.07
 

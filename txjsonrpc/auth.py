@@ -1,6 +1,14 @@
 from zope.interface import Interface, implements
 
-from twisted import web, web2
+try:
+    from twisted import web
+except ImportError:
+    web = None
+try:
+    from twisted import web2
+except ImportError:
+    web2 = None
+
 from twisted.cred.portal import IRealm, Portal
 
 

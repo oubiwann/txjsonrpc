@@ -1,3 +1,5 @@
+import os
+
 from twisted.trial.unittest import TestCase
 
 
@@ -19,9 +21,16 @@ class ImportTestCase(TestCase):
         else:
             twisted.web2 = self.original_twisted_web2
 
+    def removeCompiled(self, filename):
+        if filename.endswith(".pyc") or filename.endswith(".pyo"):
+            if os.path.exists(filename):
+                os.unlink(filename)
+
     def getTwistedWeb(self):
         try:
             from twisted import web
+            if hasattr(web, "__file__"):
+                self.removeCompiled(web.__file__)
         except ImportError:
             web = None
         self.original_twisted_web = web
@@ -30,6 +39,8 @@ class ImportTestCase(TestCase):
     def getTwistedWeb2(self):
         try:
             from twisted import web2
+            if hasattr(web2, "__file__"):
+                self.removeCompiled(web2.__file__)
         except ImportError:
             web2 = None
         self.original_twisted_web2 = web2
@@ -62,21 +73,25 @@ class ImportTestCase(TestCase):
     def test_no_twisted_web(self):
         self.removeTwistedWeb()
         from txjsonrpc import auth
+        reload(auth)
         self.assertEquals(auth.web, None)
-
-    def test_twisted_web(self):
-        self.setTwistedWeb()
-        from txjsonrpc import auth
-        self.assertTrue(auth.web is not None)
 
     def test_no_twisted_web2(self):
         self.removeTwistedWeb2()
         from txjsonrpc import auth
+        reload(auth)
         self.assertEquals(auth.web2, None)
+
+    def test_twisted_web(self):
+        self.setTwistedWeb()
+        from txjsonrpc import auth
+        reload(auth)
+        self.assertTrue(auth.web is not None)
 
     def test_twisted_web2(self):
         self.setTwistedWeb2()
         from txjsonrpc import auth
+        reload(auth)
         self.assertTrue(auth.web2 is not None)
 
 

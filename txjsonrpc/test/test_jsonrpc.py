@@ -15,14 +15,14 @@ class BaseQueryFactoryTestCase(TestCase):
         factory = BaseQueryFactory("someMethod")
         payload = factory._buildVersionedPayload(VERSION_PRE1)
         self.assertEquals(
-            payload, '{"params": [], "jsonrpc": "0.0", "method": ""}')
+            payload, '{"params": [], "method": ""}')
 
     def test_buildVersionedPayload1(self):
         factory = BaseQueryFactory("someMethod")
         payload = factory._buildVersionedPayload(VERSION_1)
         self.assertEquals(
             payload,
-            '{"params": [], "jsonrpc": "1.0", "method": "", "id": ""}')
+            '{"params": [], "method": "", "id": ""}')
 
     def test_buildVersionedPayload2(self):
         factory = BaseQueryFactory("someMethod")

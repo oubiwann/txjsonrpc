@@ -92,7 +92,13 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         functionPath = parsed.get("method")
         args = parsed.get('params')
         id = parsed.get('id')
-        version = parsed.get('jsonrpc') or jsonrpclib.VERSION_PRE1
+        version = parsed.get('jsonrpc')
+        if version:
+            version = int(float(version))
+        elif id and not version:
+            version = jsonrpclib.VERSION_1
+        else:
+            version = jsonrpclib.VERSION_PRE1
         # XXX this all needs to be re-worked to support logic for multiple
         # versions...
         try:
@@ -107,7 +113,6 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         return server.NOT_DONE_YET
 
     def _cbRender(self, result, request, id, version):
-        version = int(float(version))
         if isinstance(result, Handler):
             result = result.result
         if version == jsonrpclib.VERSION_PRE1:

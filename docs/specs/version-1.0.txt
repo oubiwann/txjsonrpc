@@ -20,11 +20,6 @@ It has three properties:
   callbacks in Twisted, this property is not needed nor used by txJSON-RPC.
   In the version 1.0 spec, it is provided for the sake of compatibility.
 
-In our implementation, we use a fourth property not defined in the 1.0 spec,
-but defined in the 2.0 spec: "jsonrpc", whose value is the version number.
-Adding this to the payload doesn't break backwards compatibility, but it does
-make it easier for txJSON-RPC to determine the version number of the request.
-
 The following imported function is not public and not intended for regular use
 as part of the API. Its use here is for spec-compliance demonstration only::
 
@@ -32,7 +27,7 @@ as part of the API. Its use here is for spec-compliance demonstration only::
     >>>
     >>> proxy = ServerProxy("http://some.url", version=VERSION_1)
     >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"], "anid")
-    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "1.0", "method": "myfunc", "id": "anid"}'
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc", "id": "anid"}'
 
 Note that all three txJSON-RPC subpackages make use of the same code for
 creating a payload to send to a JSON-RPC server. Here's an example for the
@@ -44,7 +39,7 @@ twisted.web async request::
     >>> factory = QueryFactory("path", "host", "myfunc", "user",
     ...   "password", VERSION_1, "arg1", "arg2", "arg3")
     >>> factory.payload
-    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "1.0", "method": "myfunc", "id": ""}'
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc", "id": ""}'
 
 
 Response

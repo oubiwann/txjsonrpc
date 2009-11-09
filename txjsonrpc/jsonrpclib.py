@@ -128,12 +128,12 @@ class Transport(xmlrpclib.Transport):
 
 
 def _preV1Request(method="", params=[], *args):
-    return dumps({"jsonrpc": "0.0", "method": method, "params": params})
+    return dumps({"method": method, "params": params})
 
 
 def _v1Request(method="", params=[], id="", *args):
     return dumps(
-        {"jsonrpc": "1.0", "method": method, "params": params, "id": id})
+        {"method": method, "params": params, "id": id})
 
 
 def _v1Notification(method="", params=[], *args):

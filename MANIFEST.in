@@ -1,0 +1,8 @@
+recursive-include docs *.txt
+recursive-include examples *.py *.tac *.db
+recursive-include txjsonrpc *.py
+include ChangeLog
+include README
+include LICENSE
+include TODO
+

@@ -1,0 +1,93 @@
+===============
+Pre-version 1.0
+===============
+
+
+Request
+-------
+
+A remote method is invoked by sending a request to a remote service. The
+request is a single object serialized using JSON.
+
+It has two properties:
+
+* method - A String containing the name of the method to be invoked.
+
+* params - An Array of objects to pass as arguments to the method.
+
+In our implementation, we use a third property not previously used
+but defined in the 2.0 spec: "jsonrpc", whose value is the version number.
+Adding this to the payload doesn't break backwards compatibility, but it does
+make it easier for txJSON-RPC to determine the version number of the request.
+
+The following imported function is not public and not intended for regular use
+as part of the API. Its use here is for spec-compliance demonstration only::
+
+    >>> from txjsonrpc.jsonrpclib import ServerProxy, VERSION_PRE1
+    >>>
+    >>> proxy = ServerProxy("http://some.url", version=VERSION_PRE1)
+    >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"])
+    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "0.0", "method": "myfunc"}'
+
+Note that this is the default behaviour as well: if we want to use the original
+txJSON-RPC version, we can just do this::
+
+    >>> from txjsonrpc.jsonrpclib import ServerProxy
+    >>>
+    >>> proxy = ServerProxy("http://some.url")
+    >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"])
+    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "0.0", "method": "myfunc"}'
+
+Note that all three txJSON-RPC subpackages make use of the same code for
+creating a payload to send to a JSON-RPC server. Here's an example for the
+twisted.web async request::
+
+    >>> from txjsonrpc.jsonrpclib import VERSION_PRE1
+    >>> from txjsonrpc.web.jsonrpc import QueryFactory
+    >>>
+    >>> factory = QueryFactory("path", "host", "myfunc", "user",
+    ...   "password", VERSION_PRE1, "arg1", "arg2", "arg3")
+    >>> factory.payload
+    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "0.0", "method": "myfunc"}'
+
+
+Response
+--------
+
+When the method invocation completes, the service must reply with a response.
+In the case of error-free method calls, the response sill simply be the JSON
+data for the result.
+
+In the case of an error, an object with the following attributes will be
+returned:
+
+* fault - The class name of the exception that was raised.
+
+* faultCode - The code that was passed when the exception was created.
+
+* faultString - The error messages that was passed when the exception was
+  created.
+
+Here's an example of a successful response::
+
+    >>> from txjsonrpc.jsonrpclib import dumps, VERSION_PRE1
+    >>>
+    >>> result = 8
+    >>> dumps(result, version=VERSION_PRE1)
+    '8'
+
+The default behaviour is to fall back to pre-Version 1.0 of the spec::
+
+    >>> from txjsonrpc.jsonrpclib import dumps
+    >>>
+    >>> result = 8
+    >>> dumps(result)
+    '8'
+
+Here's an example error response::
+
+    >>> from txjsonrpc.jsonrpclib import Fault, dumps
+    >>>
+    >>> error = Fault(86, "No more pasta")
+    >>> dumps(error)
+    '{"fault": "Fault", "faultCode": 86, "faultString": "No more pasta"}'

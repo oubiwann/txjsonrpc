@@ -1,0 +1,97 @@
+===========
+Version 1.0
+===========
+
+
+Request
+-------
+
+A remote method is invoked by sending a request to a remote service. The
+request is a single object serialized using JSON.
+
+It has three properties:
+
+* method - A String containing the name of the method to be invoked.
+
+* params - An Array of objects to pass as arguments to the method.
+
+* id - The request id. This can be of any type. It is used to match the
+  response with the request that it is replying to. Due to the nature of
+  callbacks in Twisted, this property is not needed nor used by txJSON-RPC.
+  In the version 1.0 spec, it is provided for the sake of compatibility.
+
+In our implementation, we use a fourth property not defined in the 1.0 spec,
+but defined in the 2.0 spec: "jsonrpc", whose value is the version number.
+Adding this to the payload doesn't break backwards compatibility, but it does
+make it easier for txJSON-RPC to determine the version number of the request.
+
+The following imported function is not public and not intended for regular use
+as part of the API. Its use here is for spec-compliance demonstration only::
+
+    >>> from txjsonrpc.jsonrpclib import ServerProxy, VERSION_1
+    >>>
+    >>> proxy = ServerProxy("http://some.url", version=VERSION_1)
+    >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"], "anid")
+    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "1.0", "method": "myfunc", "id": "anid"}'
+
+Note that all three txJSON-RPC subpackages make use of the same code for
+creating a payload to send to a JSON-RPC server. Here's an example for the
+twisted.web async request::
+
+    >>> from txjsonrpc.jsonrpclib import VERSION_1
+    >>> from txjsonrpc.web.jsonrpc import QueryFactory
+    >>>
+    >>> factory = QueryFactory("path", "host", "myfunc", "user",
+    ...   "password", VERSION_1, "arg1", "arg2", "arg3")
+    >>> factory.payload
+    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "1.0", "method": "myfunc", "id": ""}'
+
+
+Response
+--------
+
+When the method invocation completes, the service must reply with a response.
+The response is a single object serialized using JSON.
+
+It has three properties:
+
+    * result - The Object that was returned by the invoked method. This must be
+      null in case there was an error invoking the method.
+
+    * error - An Error object if there was an error invoking the method. It
+      must be null if there was no error.
+
+    * id - This must be the same id as the request it is responding to. Due to
+      the nature of callbacks in Twisted, this property is not needed nor used
+      by txJSON-RPC.  In the version 1.0 spec, it is provided for the sake of
+      compatibility.
+
+Here's an example of a successful response::
+
+    >>> from txjsonrpc.jsonrpclib import dumps, VERSION_1
+    >>>
+    >>> result = 8
+    >>> dumps(result, id=1234, version=VERSION_1)
+    '{"id": 1234, "result": 8, "error": null}'
+
+Here's an example error response::
+
+    >>> from txjsonrpc.jsonrpclib import Fault, dumps, VERSION_1
+    >>>
+    >>> error = Fault(86, "No more pasta")
+    >>> dumps(error, id=1235, version=VERSION_1)
+    '{"id": 1235, "result": null, "error": {"fault": "Fault", "faultCode": 86, "faultString": "No more pasta"}}'
+
+
+Notification
+------------
+
+
+Class Hinting
+-------------
+
+Class hinting is currently unsupported by txJSON-RPC.
+
+
+Communication Examples
+----------------------

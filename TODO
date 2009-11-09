@@ -7,15 +7,38 @@ Known Issues
 
 * txJSON-RPC doesn't yet support the proposed v2.0 JSON-RPC protocol.
 
+JSON-RPC All
+------------
 
 JSON-RPC over TCP
 -----------------
+
+* add version support in proxy constructor and callRemote method
+
+* add unit tests for proxy's use of version in constructor as well as
+  callRemote
 
 * pull out anything that has to do with setting the payload (e.g.,
   method/params dict) and put it in jsonrpclib
 
 * clean up error checking, now that errors are going in the payload under the
   "error" key.
+
+
+JSON-RPC over HTTP (web2)
+--------------------------
+
+* add a client example
+
+* update 
+
+
+JSON-RPC over HTTP (web)
+------------------------
+
+* add unit tests for proxy's use of version in constructor as well as
+  callRemote
+
 
 jsonrpclib
 ----------

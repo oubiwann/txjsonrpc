@@ -15,11 +15,6 @@ It has two properties:
 
 * params - An Array of objects to pass as arguments to the method.
 
-In our implementation, we use a third property not previously used
-but defined in the 2.0 spec: "jsonrpc", whose value is the version number.
-Adding this to the payload doesn't break backwards compatibility, but it does
-make it easier for txJSON-RPC to determine the version number of the request.
-
 The following imported function is not public and not intended for regular use
 as part of the API. Its use here is for spec-compliance demonstration only::
 
@@ -27,7 +22,7 @@ as part of the API. Its use here is for spec-compliance demonstration only::
     >>>
     >>> proxy = ServerProxy("http://some.url", version=VERSION_PRE1)
     >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"])
-    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "0.0", "method": "myfunc"}'
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc"}'
 
 Note that this is the default behaviour as well: if we want to use the original
 txJSON-RPC version, we can just do this::
@@ -36,7 +31,7 @@ txJSON-RPC version, we can just do this::
     >>>
     >>> proxy = ServerProxy("http://some.url")
     >>> proxy._getVersionedRequest("myfunc", ["arg1", "arg2", "arg3"])
-    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "0.0", "method": "myfunc"}'
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc"}'
 
 Note that all three txJSON-RPC subpackages make use of the same code for
 creating a payload to send to a JSON-RPC server. Here's an example for the
@@ -48,7 +43,7 @@ twisted.web async request::
     >>> factory = QueryFactory("path", "host", "myfunc", "user",
     ...   "password", VERSION_PRE1, "arg1", "arg2", "arg3")
     >>> factory.payload
-    '{"params": ["arg1", "arg2", "arg3"], "jsonrpc": "0.0", "method": "myfunc"}'
+    '{"params": ["arg1", "arg2", "arg3"], "method": "myfunc"}'
 
 
 Response

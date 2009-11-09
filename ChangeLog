@@ -1,3 +1,8 @@
+2009.11.09
+
+* Removed the version hack and determined version of the request made to the
+server by message format/spec support.
+
 2009.11.08
 
 * Added import checks in auth.py.

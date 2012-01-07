@@ -2,15 +2,15 @@
 Changes
 =======
 
-txJSON-RPC 0.4.0
+txJSON-RPC 0.3.1
 ----------------
 
-* Added support for versions 1.0 and 2.0 of the JSON-RPC spec.
+* Fixed a setup.py bug in the source distribution.
 
-* Added basic authentication infrastructure support for easy setup of protected
-  RPC resources.
+* Removed web2 support (which was breaking txJSON-RPC on modern Twisted
+  releases.)
 
-* An intensive refactoring took place, which removed much redundant code.
+* Updated json support for modern Python versions.
 
 
 txJSON-RPC 0.3.0

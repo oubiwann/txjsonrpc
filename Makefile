@@ -1,4 +1,9 @@
 PROJ := txjsonrpc
+GITHUB_REPO := github.com:oubiwann/$(PROJ).git
+LP_REPO := lp:$(PROJ)
+MSG_FILE ?= MSG
+VIRT_DIR ?= .txjsonrpc-venv
+VERSION := $(shell python txjsonrpc/scripts/getVersion.py)
 
 bzr-2-git:
 	git init && bzr fast-export `pwd` | git fast-import && git reset HEAD
@@ -10,34 +15,70 @@ clean:
 	find ./ -name "*.pyc" -exec rm {} \;
 	find ./ -name "*.pyo" -exec rm {} \;
 	find . -name "*.sw[op]" -exec rm {} \;
-	rm -rf MSG.backup _trial_temp/ build/ dist/ MANIFEST \
+	rm -rf $(MSG_FILE) $(MSG_FILE).backup _trial_temp/ build/ dist/ MANIFEST \
 		CHECK_THIS_BEFORE_UPLOAD.txt *.egg-info
 
+msg:
+	-@rm $(MSG_FILE)
+	@git diff ChangeLog |egrep -v '^\+\+\+'|egrep '^\+.*'|sed -e 's/^+//' >> $(MSG_FILE)
+.PHONY: msg
 
-stat:
-	@echo "Changes:"
-	@cat MSG
+commit: msg
+	bzr commit --show-diff --file=$(MSG_FILE)
+	@echo '!!! REMOVE THIS LINE !!!' >> $(MSG_FILE)
+	git commit -a -v -t $(MSG_FILE)
+	mv $(MSG_FILE) $(MSG_FILE).backup
+	touch $(MSG_FILE)
+
+push:
+	git push --all git@$(GITHUB_REPO)
+	bzr push $(LP_REPO)
+
+push-tags:
+	git push --tags git@$(GITHUB_REPO)
+
+push-all: push push-tags
+.PHONY: push-all
+
+commit-push: commit push-all
+.PHONY: commit-push
+
+stat: msg
 	@echo
-	@echo "Bazzar working dir status:"
+	@echo "### Changes ###"
 	@echo
-	@echo -n "Current revision: "
-	@bzr revno
+	-@cat $(MSG_FILE)|egrep -v '^\!\!\!'
+	@echo
+	@echo "### Git working branch status ###"
+	@echo
+	@git status -s
+	@echo
+	@echo "### Git branches ###"
+	@echo
+	@git branch
+	@echo 
+	@echo "### Bzr status ###"
+	@echo
 	@bzr stat
+	@echo
 
+status: stat
+.PHONY: status
 
 todo:
 	git grep -n -i -2 XXX
-
+.PHONY: todo
 
 build:
 	python setup.py build
 	python setup.py sdist
 
+build-docs:
+	cd docs/sphinx; make html
 
 check-docs: files = "README"
 check-docs:
 	@echo "noop"
-
 
 check-examples: files = "examples/*.py"
 check-examples:
@@ -49,37 +90,34 @@ check-dist:
 check: build check-docs check-examples
 	trial $(PROJ)
 
-build-docs:
-	cd docs/sphinx; make html
+check-integration:
+# placeholder for integration tests
+.PHONY: check-integration
 
-commit:
-	bzr commit --show-diff
-	git commit -a -v
+version:
+	@echo $(VERSION)
 
-msg-file:
-	git diff ChangeLog|egrep '^\+'|egrep -v '^\+{3}'|sed -e 's/^\+//'> MSG
+virtual-build: SUB_DIR ?= test-build
+virtual-build: DIR ?= $(VIRT_DIR)/$(SUB_DIR)
+virtual-build: clean build
+	mkdir -p $(VIRT_DIR)
+	-test -d $(DIR) || virtualenv $(DIR)
+	@. $(DIR)/bin/activate
+	-test -e $(DIR)/bin/twistd || $(DIR)/bin/pip install twisted
+	-test -d $(DIR)/lib/python2.7/site-packages/nevow || $(DIR)/bin/pip install nevow
+	$(DIR)/bin/pip uninstall -vy txJSON-RPC
+	rm -rf $(DIR)/lib/python2.7/site-packages/PyMonitor-*
+	$(DIR)/bin/easy_install-2.7 ./dist/txJSON*
+	-@deactivate
 
-commit-msg: msg-file
-	bzr commit --file=MSG
-	git commit -a -F MSG
+clean-virt: clean
+	rm -rf $(VIRT_DIR)
 
-
-push: commit clean
-	bzr push lp:$(PROJ)
-	git push origin master
-
-
-push-msg: commit-msg clean
-	bzr push lp:$(PROJ)
-	git push origin master
-	mv MSG MSG.backup
-	touch MSG
+virtual-build-clean: clean-virt build virtual-build
+.PHONY: virtual-build-clean
 
 register:
 	python setup.py register
 
 upload: check
 	python setup.py sdist upload --show-response
-
-upload-docs: build-docs
-	python setup.py upload_docs --upload-dir=docs/html/

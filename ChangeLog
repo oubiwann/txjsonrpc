@@ -13,6 +13,7 @@ the source build.
 * Fixed up the dist util module to account for the renamed README.
 * Fixed the json import for modern versions of Python.
 * Removed web2 support.
+* Updated HISTORY file.
 
 2009.11.09
 

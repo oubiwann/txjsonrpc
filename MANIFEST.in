@@ -1,8 +1,7 @@
-recursive-include docs *.txt
-recursive-include examples *.py *.tac *.db
-recursive-include txjsonrpc *.py
+graft docs
+graft examples
+graft txjsonrpc
 include ChangeLog
-include README
+include README.rst
 include LICENSE
 include TODO
-

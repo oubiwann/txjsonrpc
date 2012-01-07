@@ -50,7 +50,7 @@ stat: msg
 	@echo
 	@echo "### Changes ###"
 	@echo
-	-@cat $(MSG_FILE)|egrep -v '^\!\!\!'
+	-@cat $(MSG_FILE)
 	@echo
 	@echo "### Git working branch status ###"
 	@echo
@@ -107,11 +107,10 @@ virtual-build: clean build
 	-test -d $(DIR) || virtualenv $(DIR)
 	@. $(DIR)/bin/activate
 	-test -e $(DIR)/bin/twistd || $(DIR)/bin/pip install twisted
-	-test -d $(DIR)/lib/python2.7/site-packages/nevow || $(DIR)/bin/pip install nevow
-	$(DIR)/bin/pip uninstall -vy txJSON-RPC
-	rm -rf $(DIR)/lib/python2.7/site-packages/PyMonitor-*
+	-test -e $(DIR)/bin/rst2html.py || $(DIR)/bin/pip install docutils
+	$(DIR)/bin/pip uninstall -vy txJSON_RPC
+	rm -rf $(DIR)/lib/python2.7/site-packages/txJSON*
 	$(DIR)/bin/easy_install-2.7 ./dist/txJSON*
-	-@deactivate
 
 clean-virt: clean
 	rm -rf $(VIRT_DIR)

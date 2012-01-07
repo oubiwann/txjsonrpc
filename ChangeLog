@@ -5,6 +5,12 @@
 * Updated Makefile with improved (and more) targets as well as support for both
 bzr and git.
 * Added a silly version script (used by the Makefile).
+* Fixed the MANIFEST.in file (this addresses a long-standing bug in this
+version of txJSON-RPC).
+* Incremented the version number due to the bug fix for the included docs in
+the source build.
+* Fixed the virtual-env build make target.
+* Fixed up the dist util module to account for the renamed README.
 
 2009.11.09
 

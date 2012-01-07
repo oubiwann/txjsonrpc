@@ -4,6 +4,7 @@
 * Added *ignore files.
 * Updated Makefile with improved (and more) targets as well as support for both
 bzr and git.
+* Added a silly version script (used by the Makefile).
 
 2009.11.09
 

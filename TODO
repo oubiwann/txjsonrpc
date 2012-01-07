@@ -12,6 +12,8 @@ Known Issues
 * The docs are built with an extraneous "README" added to the text as a result
   of the README file getting renamed to README.rst.
 
+* Need to add a git mirror on Google Code.
+
 JSON-RPC All
 ------------
 

@@ -2,6 +2,7 @@ PROJ := txjsonrpc
 GITHUB_REPO := github.com:oubiwann/$(PROJ).git
 LP_REPO := lp:$(PROJ)
 MSG_FILE ?= MSG
+TMP_FILE ?= /tmp/MSG
 VIRT_DIR ?= .txjsonrpc-venv
 VERSION := $(shell python txjsonrpc/scripts/getVersion.py)
 
@@ -25,7 +26,9 @@ msg:
 
 commit: msg
 	bzr commit --show-diff --file=$(MSG_FILE)
-	@echo '!!! REMOVE THIS LINE !!!' >> $(MSG_FILE)
+	@echo '!!! REMOVE THIS LINE !!!' >> $(TMP_FILE)
+	@cat $(MSG_FILE) >> $(TMP_FILE)
+	@mv $(TMP_FILE) $(MSG_FILE)
 	git commit -a -v -t $(MSG_FILE)
 	mv $(MSG_FILE) $(MSG_FILE).backup
 	touch $(MSG_FILE)

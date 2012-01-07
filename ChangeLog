@@ -14,6 +14,7 @@ the source build.
 * Fixed the json import for modern versions of Python.
 * Removed web2 support.
 * Updated HISTORY file.
+* Updated TODO.
 
 2009.11.09
 

@@ -12,6 +12,7 @@ the source build.
 * Fixed the virtual-env build make target.
 * Fixed up the dist util module to account for the renamed README.
 * Fixed the json import for modern versions of Python.
+* Removed web2 support.
 
 2009.11.09
 

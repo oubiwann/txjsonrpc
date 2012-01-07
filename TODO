@@ -7,6 +7,11 @@ Known Issues
 
 * txJSON-RPC doesn't yet support the proposed v2.0 JSON-RPC protocol.
 
+* There's a typo in txjsonrpc.meta ("creatig").
+
+* The docs are built with an extraneous "README" added to the text as a result
+  of the README file getting renamed to README.rst.
+
 JSON-RPC All
 ------------
 
@@ -23,14 +28,6 @@ JSON-RPC over TCP
 
 * clean up error checking, now that errors are going in the payload under the
   "error" key.
-
-
-JSON-RPC over HTTP (web2)
---------------------------
-
-* add a client example
-
-* update 
 
 
 JSON-RPC over HTTP (web)

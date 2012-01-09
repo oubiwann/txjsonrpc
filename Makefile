@@ -1,6 +1,6 @@
 PROJ := txjsonrpc
 GITHUB_REPO := github.com:oubiwann/$(PROJ).git
-GOOGLE_REPO := code.google.com/p/$(PROJ)
+GOOGLE_REPO := code.google.com/p/twisted-jsonrpc
 LP_REPO := lp:$(PROJ)
 MSG_FILE ?= MSG
 TMP_FILE ?= /tmp/MSG

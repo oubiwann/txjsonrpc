@@ -1,5 +1,6 @@
 PROJ := txjsonrpc
 GITHUB_REPO := github.com:oubiwann/$(PROJ).git
+GOOGLE_REPO := code.google.com/p/$(PROJ)
 LP_REPO := lp:$(PROJ)
 MSG_FILE ?= MSG
 TMP_FILE ?= /tmp/MSG
@@ -36,9 +37,11 @@ commit: msg
 push:
 	git push --all git@$(GITHUB_REPO)
 	bzr push $(LP_REPO)
+	git push --all https://$(GOOGLE_REPO)
 
 push-tags:
 	git push --tags git@$(GITHUB_REPO)
+	git push --tags https://$(GOOGLE_REPO)
 
 push-all: push push-tags
 .PHONY: push-all

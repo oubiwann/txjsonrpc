@@ -1,11 +1,8 @@
-from zope.interface import Interface, implements
+from zope.interface import implements
 
-try:
-    from twisted import web
-except ImportError:
-    web = None
-
+from twisted import web
 from twisted.cred.portal import IRealm, Portal
+from twisted.web import guard
 
 
 class HTTPAuthRealm(object):
@@ -24,21 +21,11 @@ class HTTPAuthRealm(object):
         raise NotImplementedError()
 
 
-def _wrapTwistedWebResource(resource, checkers, credFactories=[],
+def wrapResource(resource, checkers, credFactories=[],
                             realmName=""):
-    if not web:
-        raise ImportError("twisted.web does not seem to be installed.")
-    from twisted.web import guard
 
     defaultCredFactory = guard.BasicCredentialFactory(realmName)
     credFactories.insert(0, defaultCredFactory)
     realm = HTTPAuthRealm(resource)
     portal = Portal(realm, checkers)
     return guard.HTTPAuthSessionWrapper(portal, credFactories)
-
-
-def wrapResource(resource, *args, **kwargs):
-    if web.resource.IResource.providedBy(resource):
-        return _wrapTwistedWebResource(resource, *args, **kwargs)
-    elif web2.iweb.IResource.providedBy(resource):
-        return _wrapTwistedWeb2Resource(resource, *args, **kwargs)

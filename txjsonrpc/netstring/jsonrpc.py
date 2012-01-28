@@ -19,7 +19,7 @@ from txjsonrpc.jsonrpc import (
 class JSONRPC(basic.NetstringReceiver, BaseSubhandler):
     """
     A protocol that implements JSON-RPC.
-    
+
     Methods published can return JSON-RPC serializable results, Faults,
     Binary, Boolean, DateTime, Deferreds, or Handler instances.
 
@@ -131,7 +131,6 @@ class Proxy(BaseProxy):
         BaseProxy.__init__(self, version, factoryClass)
         self.host = host
         self.port = port
-
 
     def callRemote(self, method, *args, **kwargs):
         version = self._getVersion(kwargs)

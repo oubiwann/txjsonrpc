@@ -15,8 +15,9 @@ class DumpTestCase(TestCase):
         object = Fault("code", "message")
         result = dumps(object)
         self.assertEquals(
-            result, 
-            '{"fault": "Fault", "faultCode": "code", "faultString": "message"}')
+            result,
+            ('{"fault": "Fault", "faultCode": "code", '
+             '"faultString": "message"}'))
 
     def test_versionPre1(self):
         object = {"some": "data"}
@@ -27,8 +28,9 @@ class DumpTestCase(TestCase):
         object = Fault("code", "message")
         result = dumps(object, version=VERSION_PRE1)
         self.assertEquals(
-            result, 
-            '{"fault": "Fault", "faultCode": "code", "faultString": "message"}')
+            result,
+            ('{"fault": "Fault", "faultCode": "code", '
+             '"faultString": "message"}'))
 
     def test_version1(self):
         object = {"some": "data"}
@@ -41,7 +43,7 @@ class DumpTestCase(TestCase):
         object = Fault("code", "message")
         result = dumps(object, version=VERSION_1)
         self.assertEquals(
-            result, 
+            result,
             ('{"id": null, "result": null, "error": {"fault": "Fault", '
              '"faultCode": "code", "faultString": "message"}}'))
 
@@ -56,7 +58,7 @@ class DumpTestCase(TestCase):
         object = Fault("code", "message")
         result = dumps(object, version=VERSION_2)
         self.assertEquals(
-            result, 
+            result,
             ('{"id": null, "result": null, "error": {"fault": "Fault", '
              '"faultCode": "code", "faultString": "message"}}'))
 

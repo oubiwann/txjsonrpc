@@ -121,9 +121,10 @@ def catReST(*args, **kwds):
                 print "ReST validation error"
                 print
                 print "See the following:"
-                print "  http://docutils.sourceforge.net/docs/user/rst/cheatsheet.txt"
-                print "  http://docutils.sourceforge.net/docs/user/rst/quickstart.html"
+                print ("  http://docutils.sourceforge.net/docs/"
+                       "user/rst/cheatsheet.txt")
+                print ("  http://docutils.sourceforge.net/docs/"
+                       "user/rst/quickstart.html")
                 print
                 raise ValueError("ReST validation error")
     return res
-

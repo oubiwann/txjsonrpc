@@ -164,7 +164,7 @@ class JSONRPCTestIntrospection(JSONRPCTestCase):
         jsonrpc = Test()
         addIntrospection(jsonrpc)
         self.p = reactor.listenTCP(
-            0, server.Site(jsonrpc),interface="127.0.0.1")
+            0, server.Site(jsonrpc), interface="127.0.0.1")
         self.port = self.p.getHost().port
 
     def testListMethods(self):

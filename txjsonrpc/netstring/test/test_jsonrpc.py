@@ -27,7 +27,7 @@ class Test(JSONRPC):
     NOT_FOUND = jsonrpclib.METHOD_NOT_FOUND
 
     addSlash = True
-    
+
     def jsonrpc_add(self, a, b):
         """
         This function add two numbers.
@@ -85,10 +85,10 @@ class QueryFactoryTestCase(unittest.TestCase):
 
         factory = QueryFactory("mymethod", "myarg1", "myarg2")
         self.assertEquals(factory.protocol.MAX_LENGTH, 99999)
-        
+
 
 class JSONRPCTestCase(unittest.TestCase):
-    
+
     def setUp(self):
         self.p = reactor.listenTCP(0, jsonrpc.RPCFactory(Test),
                                    interface="127.0.0.1")
@@ -151,11 +151,9 @@ class JSONRPCClassMaxLengthTestCase(JSONRPCTestCase):
                 lengths.append(self.MAX_LENGTH)
                 QueryFactory.__init__(self, *args)
 
-        
         proxy = Proxy("127.0.0.1", self.port, factoryClass=Factory)
         self.maxLengths = lengths
         return proxy
-
 
     def testResults(self):
 

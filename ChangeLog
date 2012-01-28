@@ -2,6 +2,7 @@
 
 * Updated Makefile with recent work from txAWS Makefile for testing builds in
 various versions of Python with different virtual-envs.
+* Fixed PEP-8 errors that had cropped up over the years.
 
 2012.01.08
 

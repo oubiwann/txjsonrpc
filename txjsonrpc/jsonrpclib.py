@@ -1,5 +1,5 @@
 """
-Requires simplejson; can be downloaded from 
+Requires simplejson; can be downloaded from
 http://cheeseshop.python.org/pypi/simplejson
 """
 import xmlrpclib
@@ -12,16 +12,16 @@ except ImportError:
 
 
 # From xmlrpclib.
-SERVER_ERROR          = xmlrpclib.SERVER_ERROR
-NOT_WELLFORMED_ERROR  = xmlrpclib.NOT_WELLFORMED_ERROR
-UNSUPPORTED_ENCODING  = xmlrpclib.UNSUPPORTED_ENCODING
+SERVER_ERROR = xmlrpclib.SERVER_ERROR
+NOT_WELLFORMED_ERROR = xmlrpclib.NOT_WELLFORMED_ERROR
+UNSUPPORTED_ENCODING = xmlrpclib.UNSUPPORTED_ENCODING
 INVALID_ENCODING_CHAR = xmlrpclib.INVALID_ENCODING_CHAR
-INVALID_JSONRPC       = xmlrpclib.INVALID_XMLRPC
-METHOD_NOT_FOUND      = xmlrpclib.METHOD_NOT_FOUND
+INVALID_JSONRPC = xmlrpclib.INVALID_XMLRPC
+METHOD_NOT_FOUND = xmlrpclib.METHOD_NOT_FOUND
 INVALID_METHOD_PARAMS = xmlrpclib.INVALID_METHOD_PARAMS
-INTERNAL_ERROR        = xmlrpclib.INTERNAL_ERROR
+INTERNAL_ERROR = xmlrpclib.INTERNAL_ERROR
 # Custom errors.
-METHOD_NOT_CALLABLE   = -32604
+METHOD_NOT_CALLABLE = -32604
 
 # Version constants.
 VERSION_PRE1 = 0
@@ -82,8 +82,7 @@ def loads(string, **kws):
     # for versions greater than VERSION_PRE1, we'll have to check for the
     # "error" key, not the "fault" key... and then raise if "fault" is not
     # None.
-    if (isinstance(unmarshalled, dict) and
-        unmarshalled.has_key('fault')):
+    if (isinstance(unmarshalled, dict) and "fault" in unmarshalled):
         raise Fault(unmarshalled['faultCode'], unmarshalled['faultString'])
     return unmarshalled
 

@@ -54,13 +54,15 @@ class Handler:
     """
 
     def __init__(self, resource, *args):
-        self.resource = resource # the JSON-RPC resource we are connected to
+        # the JSON-RPC resource we are connected to
+        self.resource = resource
         self.result = defer.Deferred()
         self.run(*args)
 
     def run(self, *args):
         # event driven equivalent of 'raise UnimplementedError'
-        self.result.errback(NotImplementedError("Implement run() in subclasses"))
+        self.result.errback(
+            NotImplementedError("Implement run() in subclasses"))
 
 
 class JSONRPC(resource.Resource, BaseSubhandler):

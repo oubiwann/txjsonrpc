@@ -1,10 +1,7 @@
-import os
-
 from zope.interface import Interface
 
-from twisted import web
 from twisted.cred.checkers import InMemoryUsernamePasswordDatabaseDontUse
-from twisted.trial.unittest import SkipTest, TestCase
+from twisted.trial.unittest import TestCase
 
 from txjsonrpc.auth import HTTPAuthRealm, wrapResource
 

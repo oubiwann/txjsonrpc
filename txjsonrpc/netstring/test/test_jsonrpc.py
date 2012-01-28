@@ -7,7 +7,6 @@ from twisted.internet import reactor, defer
 from twisted.trial import unittest
 
 from txjsonrpc import jsonrpclib
-from txjsonrpc.jsonrpc import addIntrospection
 from txjsonrpc.netstring import jsonrpc
 from txjsonrpc.netstring.jsonrpc import (
     JSONRPC, Proxy, QueryFactory)

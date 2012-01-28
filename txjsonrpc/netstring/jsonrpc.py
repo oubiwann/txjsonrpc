@@ -7,9 +7,9 @@ API Stability: semi-stable
 
 Maintainer: U{Duncan McGreggor <mailto:oubiwann@adytum.us>}
 """
-from twisted.protocols import basic
 from twisted.internet import defer, protocol, reactor
-from twisted.python import log, reflect
+from twisted.protocols import basic
+from twisted.python import log
 
 from txjsonrpc import jsonrpclib
 from txjsonrpc.jsonrpc import (

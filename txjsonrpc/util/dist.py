@@ -105,7 +105,7 @@ def catReST(*args, **kwds):
     if len(tmp) == 1:
         res = tmp[0]
     else:
-        res = "".join(tmp)
+        res = "\n\n".join(tmp)
     out = kwds.get("out")
     stop_on_errors = kwds.get("stop_on_errors")
     if out is True:

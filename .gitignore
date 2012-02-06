@@ -8,3 +8,7 @@ build
 *.egg-info
 nohup.out
 *.sw[po]
+debian/files
+debian/*.log
+debian/*.substvars
+debian/python-txjsonrpc

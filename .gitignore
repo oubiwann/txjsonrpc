@@ -12,3 +12,5 @@ debian/files
 debian/*.log
 debian/*.substvars
 debian/python-txjsonrpc
+CHECK_THIS_BEFORE_UPLOAD.txt
+_trial_temp

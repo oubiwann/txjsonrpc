@@ -1,6 +1,8 @@
 2012.02.07
 
 * Added some more ignores.
+* Pulled down changes from https://github.com/smurfix/txjsonrpc.git (the
+"4upstream" branch).
 
 2012.01.27
 

@@ -8,3 +8,5 @@ build
 *.egg-info
 nohup.out
 *.sw[po]
+.venv-*
+.tx*-venv

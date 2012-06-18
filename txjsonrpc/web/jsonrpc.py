@@ -92,7 +92,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         content = request.content.read()
         parsed = jsonrpclib.loads(content)
         functionPath = parsed.get("method")
-        args = parsed.get('params')
+        args = parsed.get('params', [])
         id = parsed.get('id')
         version = parsed.get('jsonrpc')
         if version:

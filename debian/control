@@ -1,0 +1,18 @@
+Source: python-txjsonrpc
+Section: python
+Priority: extra
+XS-Python-Version: 2.6
+Maintainer: Matthias Urlichs <matthias@urlichs.de>
+Build-Depends: python-all-dev
+Standards-Version: 3.7.2
+
+Package: python-txjsonrpc
+Architecture: all
+Depends: ${python:Depends}, python-twisted-core
+Suggests: socat
+Description: RPC modules (netstring and web, client and server) for Twisted
+ This package implements basic client and server support for JSON-RPC
+ within the Twisted framework.
+ .
+ Note that there is no object modelling; this is not a plug-in transport
+ for Twisted's Perspective Broker.

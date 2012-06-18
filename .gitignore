@@ -10,3 +10,9 @@ nohup.out
 *.sw[po]
 .venv-*
 .tx*-venv
+=======
+debian/files
+debian/*.log
+debian/*.substvars
+debian/python-txjsonrpc
+_trial_temp

@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+export PYTHONPATH := $(shell pwd)
+
+%:
+	dh $@ --with python2
+
+override_dh_auto_build:
+	$(MAKE) build

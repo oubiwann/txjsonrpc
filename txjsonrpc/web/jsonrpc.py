@@ -183,7 +183,7 @@ class Proxy(BaseProxy):
     """
 
     def __init__(self, url, user=None, password=None,
-                 version=jsonrpclib.VERSION_PRE1, factoryClass=QueryFactory):
+                 version=jsonrpclib.VERSION_PRE1, factoryClass=QueryFactory, ssl_ctx_factory = None):
         """
         @type url: C{str}
         @param url: The URL to which to post method calls.  Calls will be made
@@ -208,6 +208,10 @@ class Proxy(BaseProxy):
         The available choices are jsonrpclib.VERSION*. The default is to use
         the version of the spec that txJSON-RPC was originally released with,
         pre-Version 1.0.
+
+        @type ssl_ctx_factory: C{twisted.internet.ssl.ClientContextFactory} or None
+        @param ssl_ctx_factory: SSL client context factory class to use instead
+        of default twisted.internet.ssl.ClientContextFactory.
         """
         BaseProxy.__init__(self, version, factoryClass)
         scheme, netloc, path, params, query, fragment = urlparse.urlparse(url)
@@ -236,6 +240,8 @@ class Proxy(BaseProxy):
         if password is not None:
             self.password = password
 
+        self.ssl_ctx_factory = ssl_ctx_factory
+
     def callRemote(self, method, *args, **kwargs):
         version = self._getVersion(kwargs)
         # XXX generate unique id and pass it as a parameter
@@ -244,8 +250,10 @@ class Proxy(BaseProxy):
             self.password, version, *args)
         if self.secure:
             from twisted.internet import ssl
+            if self.ssl_ctx_factory is None:
+                self.ssl_ctx_factory = ssl.ClientContextFactory
             reactor.connectSSL(self.host, self.port or 443,
-                               factory, ssl.ClientContextFactory())
+                               factory, self.ssl_ctx_factory())
         else:
             reactor.connectTCP(self.host, self.port or 80, factory)
         return factory.deferred

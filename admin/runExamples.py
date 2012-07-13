@@ -18,7 +18,8 @@ examples = [
 expectedResults = [
     "Result: 8",
     """
-    Result: [u'echo', u'math.add', u'system.listMethods', u'system.methodHelp', u'system.methodSignature', u'testing.getList']
+    Result: [u'echo', u'math.add', u'system.listMethods', u'system.methodHelp',
+             u'system.methodSignature', u'testing.getList']
     Result: [1, 2, 3, 4, u'a', u'b', u'c', u'd']
     Result: 8
     Result: bite me

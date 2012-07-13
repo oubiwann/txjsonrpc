@@ -20,4 +20,3 @@ def printError(error):
 proxy = Proxy('127.0.0.1', 7080)
 proxy.callRemote('add', 3, 5).addCallbacks(printValue, printError)
 reactor.run()
-

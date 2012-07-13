@@ -34,12 +34,14 @@ application = service.Application("Example JSON-RPC Server")
 root = Example()
 root.putSubHandler('math', Math())
 
+
 # Define the credential checker the application will be using and wrap the
 # JSON-RPC resource.
 dirname = os.path.dirname(__file__)
 checker = FilePasswordDB(os.path.join(dirname, "passwd.db"))
 realmName = "My JSON-RPC App"
 wrappedRoot = wrapResource(root, [checker], realmName=realmName)
+
 
 # With the wrapped root, we can set up the server as usual.
 site = server.Site(resource=wrappedRoot)

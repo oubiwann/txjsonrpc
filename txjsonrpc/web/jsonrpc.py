@@ -90,6 +90,10 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         request.content.seek(0, 0)
         # Unmarshal the JSON-RPC data.
         content = request.content.read()
+        if not content and request.method=='GET' and request.args.has_key('request'):
+            content=request.args['request'][0]
+        self.callback = request.args['callback'][0] if request.args.has_key('callback') else None
+        self.is_jsonp = True if self.callback else False
         parsed = jsonrpclib.loads(content)
         functionPath = parsed.get("method")
         args = parsed.get('params', [])
@@ -108,7 +112,10 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         except jsonrpclib.Fault, f:
             self._cbRender(f, request, id, version)
         else:
-            request.setHeader("content-type", "text/json")
+            if not self.is_jsonp:
+                request.setHeader("content-type", "text/json")
+            else:
+                request.setHeader("content-type", "text/javascript")
             d = defer.maybeDeferred(function, *args)
             d.addErrback(self._ebRender, id)
             d.addCallback(self._cbRender, request, id, version)
@@ -122,10 +129,10 @@ class JSONRPC(resource.Resource, BaseSubhandler):
                 result = (result,)
             # Convert the result (python) to JSON-RPC
         try:
-            s = jsonrpclib.dumps(result, version=version)
+            s = jsonrpclib.dumps(result, version=version) if not self.is_jsonp else "%s(%s)" %(self.callback,jsonrpclib.dumps(result, version=version))
         except:
             f = jsonrpclib.Fault(self.FAILURE, "can't serialize output")
-            s = jsonrpclib.dumps(f, version=version)
+            s = jsonrpclib.dumps(f, version=version) if not self.is_jsonp else "%s(%s)" %(self.callback,jsonrpclib.dumps(f, version=version))
         request.setHeader("content-length", str(len(s)))
         request.write(s)
         request.finish()

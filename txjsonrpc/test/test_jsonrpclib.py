@@ -1,5 +1,5 @@
 from twisted.trial.unittest import TestCase
-
+from twisted.internet import defer
 from txjsonrpc.jsonrpclib import (
     Fault, VERSION_PRE1, VERSION_1, VERSION_2, dumps, loads)
 
@@ -52,15 +52,15 @@ class DumpTestCase(TestCase):
         result = dumps(object, version=VERSION_2)
         self.assertEquals(
             result,
-            '{"id": null, "result": {"some": "data"}, "error": null}')
+            '{"jsonrpc": "2.0", "result": {"some": "data"}, "id": null}')
 
     def test_errorVersion2(self):
         object = Fault("code", "message")
         result = dumps(object, version=VERSION_2)
         self.assertEquals(
             result,
-            ('{"id": null, "result": null, "error": {"fault": "Fault", '
-             '"faultCode": "code", "faultString": "message"}}'))
+            ('{"jsonrpc": "2.0", "id": null, "error": {"message": "Fault", '
+                '"code": "code", "data": "message"}}'))
 
 
 class LoadsTestCase(TestCase):
@@ -71,3 +71,18 @@ class LoadsTestCase(TestCase):
         for input, expected in zip(jsonInput, expectedResults):
             unmarshalled = loads(input)
             self.assertEquals(unmarshalled, expected)
+
+    def test_FaultLoads(self):
+        dl = []
+        for version in (VERSION_PRE1, VERSION_2, VERSION_1):
+            object = Fault("code", "message")
+            d = defer.maybeDeferred(loads, dumps(object, version=version))
+            d = self.assertFailure(d, Fault)
+
+            def callback(exc):
+                self.assertEquals(exc.faultCode, object.faultCode)
+                self.assertEquals(exc.faultString, object.faultString)
+            d.addCallback(callback)
+
+            dl.append(d)
+        return defer.DeferredList(dl, fireOnOneErrback=True)

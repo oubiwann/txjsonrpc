@@ -12,24 +12,24 @@ class BaseQueryFactoryTestCase(TestCase):
         self.assertTrue(factory.deferred is not None)
 
     def test_buildVersionedPayloadPre1(self):
-        factory = BaseQueryFactory("someMethod")
-        payload = factory._buildVersionedPayload(VERSION_PRE1)
+        factory = BaseQueryFactory("someMethod",version=VERSION_PRE1)
+        payload = factory._buildVersionedPayload()
         self.assertEquals(
             payload, '{"params": [], "method": ""}')
 
     def test_buildVersionedPayload1(self):
-        factory = BaseQueryFactory("someMethod")
-        payload = factory._buildVersionedPayload(VERSION_1)
+        factory = BaseQueryFactory("someMethod", version=VERSION_1)
+        payload = factory._buildVersionedPayload()
         self.assertEquals(
             payload,
-            '{"params": [], "method": "", "id": ""}')
+            '{"params": [], "method": "", "id": 1}')
 
     def test_buildVersionedPayload2(self):
-        factory = BaseQueryFactory("someMethod")
-        payload = factory._buildVersionedPayload(VERSION_2)
+        factory = BaseQueryFactory("someMethod", version=VERSION_2)
+        payload = factory._buildVersionedPayload()
         self.assertEquals(
             payload,
-            '{"params": [], "jsonrpc": "2.0", "method": "", "id": ""}')
+            '{"params": [], "jsonrpc": "2.0", "method": "", "id": 1}')
 
     def test_parseResponseNoJSON(self):
 

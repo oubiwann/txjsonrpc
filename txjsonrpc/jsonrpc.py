@@ -68,18 +68,21 @@ class BaseQueryFactory(protocol.ClientFactory):
     protocol = None
 
     # XXX add an "id" parameter
+    id = 0
     def __init__(self, method, version=jsonrpclib.VERSION_PRE1, *args):
         # XXX pass the "id" parameter here
-        self.payload = self._buildVersionedPayload(version, method, args)
+        self.version = version
+        self.id = self.id + 1
+        self.payload = self._buildVersionedPayload(method, args)
         self.deferred = defer.Deferred()
 
-    def _buildVersionedPayload(self, version, *args):
-        if version == jsonrpclib.VERSION_PRE1:
+    def _buildVersionedPayload(self, *args):
+        if self.version == jsonrpclib.VERSION_PRE1:
             return jsonrpclib._preV1Request(*args)
-        elif version == jsonrpclib.VERSION_1:
-            return jsonrpclib._v1Request(*args)
-        elif version == jsonrpclib.VERSION_2:
-            return jsonrpclib._v2Request(*args)
+        elif self.version == jsonrpclib.VERSION_1:
+            return jsonrpclib._v1Request(*args, id=self.id)
+        elif self.version == jsonrpclib.VERSION_2:
+            return jsonrpclib._v2Request(*args, id=self.id)
 
     def parseResponse(self, contents):
         if not self.deferred:
@@ -87,12 +90,9 @@ class BaseQueryFactory(protocol.ClientFactory):
         try:
             # Convert the response from JSON-RPC to python.
             result = jsonrpclib.loads(contents)
-            #response = jsonrpclib.loads(contents)
-            #result = response['result']
-            #error = response['error']
-            #if error:
-            #    self.deferred.errback(error)
-            if isinstance(result, list):
+            if self.version != jsonrpclib.VERSION_PRE1:
+                result = result["result"]
+            elif isinstance(result, list):
                 result = result[0]
         except Exception, error:
             self.deferred.errback(error)

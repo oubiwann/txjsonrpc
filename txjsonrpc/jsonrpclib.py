@@ -61,9 +61,14 @@ def dumps(obj, **kwargs):
         id = None
     if isinstance(obj, Exception):
         result = None
-        error = {'fault': obj.__class__.__name__,
-                 'faultCode': obj.faultCode,
-                 'faultString': obj.faultString}
+        if version!=VERSION_2:
+            error = {'fault': obj.__class__.__name__,
+                    'faultCode': obj.faultCode,
+                    'faultString': obj.faultString}
+        else:
+            error = {'message': obj.__class__.__name__,
+                    'code': obj.faultCode,
+                    'data': obj.faultString}
     else:
         result = obj
         error = None
@@ -72,6 +77,13 @@ def dumps(obj, **kwargs):
             obj = result
         else:
             obj = error
+    elif version == VERSION_1:
+        obj = {"result": result, "error": error, "id": id}
+    elif version == VERSION_2:
+        if error:
+            obj = {"jsonrpc": "2.0", "error": error, "id": id}
+        else:
+            obj = {"jsonrpc": "2.0", "result": result, "id": id}
     else:
         obj = {"result": result, "error": error, "id": id}
     return json.dumps(obj, cls=JSONRPCEncoder, **kwargs)
@@ -85,6 +97,11 @@ def loads(string, **kws):
     # None.
     if (isinstance(unmarshalled, dict) and "fault" in unmarshalled):
         raise Fault(unmarshalled['faultCode'], unmarshalled['faultString'])
+    if (isinstance(unmarshalled, dict) and "error" in unmarshalled):
+        if "jsonrpc" in unmarshalled and unmarshalled["jsonrpc"] == "2.0":
+            raise Fault(unmarshalled["error"]['code'], unmarshalled["error"]['data'])
+        if unmarshalled['error']:
+            raise Fault(unmarshalled["error"]['faultCode'], unmarshalled["error"]['faultString'])
     return unmarshalled
 
 
@@ -103,6 +120,9 @@ class SimpleUnmarshaller(object):
 
     def getmethodname(self):
         return self.parser.data.get("method")
+
+    def getid(self):
+        return self.parser.data.get("id")
 
     def close(self):
         if isinstance(self.parser.data, dict):

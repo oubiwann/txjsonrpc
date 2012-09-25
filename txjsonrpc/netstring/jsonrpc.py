@@ -33,6 +33,10 @@ class JSONRPC(basic.NetstringReceiver, BaseSubhandler):
     separator = '.'
     closed = 0
 
+
+    def __init__(self, version=jsonrpclib.VERSION_2):
+        self.version = version
+
     def __call__(self):
         return self
 
@@ -42,34 +46,35 @@ class JSONRPC(basic.NetstringReceiver, BaseSubhandler):
     def stringReceived(self, line):
         parser, unmarshaller = jsonrpclib.getparser()
         deferred = defer.maybeDeferred(parser.feed, line)
-        deferred.addCallback(lambda x: self._cbDispatch(
-            parser, unmarshaller))
-        deferred.addErrback(self._ebRender)
-        deferred.addCallback(self._cbRender)
+
+        req, req_id = self._cbDispatch(parser, unmarshaller)
+        deferred.addCallback(lambda x: req)
+        deferred.addErrback(self._ebRender, req_id = req_id)
+        deferred.addCallback(self._cbRender, req_id = req_id)
         return deferred
 
     def _cbDispatch(self, parser, unmarshaller):
         parser.close()
-        args, functionPath = unmarshaller.close(), unmarshaller.getmethodname()
+        args, functionPath, req_id  = unmarshaller.close(), unmarshaller.getmethodname(), unmarshaller.getid()
         function = self._getFunction(functionPath)
-        return defer.maybeDeferred(function, *args)
+        return defer.maybeDeferred(function, *args), req_id
 
-    def _cbRender(self, result):
+    def _cbRender(self, result, req_id):
         if not isinstance(result, jsonrpclib.Fault):
             result = (result,)
         #s = None
         #e = None
         try:
-            s = jsonrpclib.dumps(result)
+            s = jsonrpclib.dumps(result, id=req_id, version=self.version)
         except:
             f = jsonrpclib.Fault(self.FAILURE, "can't serialize output")
             #e = jsonrpclib.dumps(f)
-            s = jsonrpclib.dumps(f)
+            s = jsonrpclib.dumps(f, id=req_id, version=self.version)
         #result = {'result': result, 'error': e}
         #return self.sendString(jsonrpclib.dumps(result))
         return self.sendString(s)
 
-    def _ebRender(self, failure):
+    def _ebRender(self, failure, req_id):
         if isinstance(failure.value, jsonrpclib.Fault):
             return failure.value
         log.err(failure)

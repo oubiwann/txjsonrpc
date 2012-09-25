@@ -229,6 +229,25 @@ class ProxyVersionPre1TestCase(JSONRPCTestCase):
         url = "http://127.0.0.1:%d/" % self.port
         return jsonrpc.Proxy(url, version=jsonrpclib.VERSION_PRE1)
 
+class ProxyVersion1TestCase(JSONRPCTestCase):
+    """
+    Tests for version 1.0.
+    """
+    def proxy(self):
+        url = "http://127.0.0.1:%d/" % self.port
+        return jsonrpc.Proxy(url, version=jsonrpclib.VERSION_1)
+
+
+
+class ProxyVersion2TestCase(JSONRPCTestCase):
+    """
+    Tests for the version 2.0.
+    """
+    def proxy(self):
+        url = "http://127.0.0.1:%d/" % self.port
+        return jsonrpc.Proxy(url, version=jsonrpclib.VERSION_2)
+
+
 
 class AuthenticatedProxyTestCase(JSONRPCTestCase):
     """

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import sys
 sys.path.insert(0, os.getcwd())
@@ -8,12 +9,12 @@ from txjsonrpc.netstring.jsonrpc import Proxy
 
 
 def printValue(value):
-    print "Result: %s" % str(value)
+    print("Result: %s" % str(value))
     reactor.stop()
 
 
 def printError(error):
-    print 'error', error
+    print('error', error)
     reactor.stop()
 
 

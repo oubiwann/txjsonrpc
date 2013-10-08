@@ -150,25 +150,35 @@ class Transport(xmlrpclib.Transport):
         return getparser()
 
 
-def _preV1Request(method="", params=[], *args):
+def _preV1Request(method="", params=None, *args):
+    if params is None:
+        params = []
     return dumps({"method": method, "params": params})
 
 
-def _v1Request(method="", params=[], id="", *args):
+def _v1Request(method="", params=None, id="", *args):
+    if params is None:
+        params = []
     return dumps(
         {"method": method, "params": params, "id": id})
 
 
-def _v1Notification(method="", params=[], *args):
+def _v1Notification(method="", params=None, *args):
+    if params is None:
+        params = []
     return _v1Request(method=method, params=params, id=None)
 
 
-def _v2Request(method="", params=[], id="", *args):
+def _v2Request(method="", params=None, id="", *args):
+    if params is None:
+        params = []
     return dumps({
         "jsonrpc": "2.0", "method": method, "params": params, "id": id})
 
 
-def _v2Notification(method="", params=[], *args):
+def _v2Notification(method="", params=None, *args):
+    if params is None:
+        params = []
     return _v2Request(method=method, params=params, id=None)
 
 

@@ -94,7 +94,7 @@ class BaseQueryFactory(protocol.ClientFactory):
                 result = result["result"]
             elif isinstance(result, list):
                 result = result[0]
-        except Exception, error:
+        except Exception as error:
             self.deferred.errback(error)
             self.deferred = None
         else:

@@ -14,7 +14,9 @@ def importModule(name):
     return mod
 
 
-def fileIsTest(path, skipFiles=[]):
+def fileIsTest(path, skipFiles=None):
+    if skipFiles is None:
+        skipFiles = []
     if not os.path.isfile(path):
         return False
     filename = os.path.basename(path)
@@ -24,7 +26,9 @@ def fileIsTest(path, skipFiles=[]):
         return True
 
 
-def find(start, func, skip=[]):
+def find(start, func, skip=None):
+    if skip is None:
+        skip = []
     for item in [os.path.join(start, x) for x in os.listdir(start)]:
         if func(item, skip):
             yield item
@@ -33,7 +37,9 @@ def find(start, func, skip=[]):
                 yield subItem
 
 
-def findTests(startDir, skipFiles=[]):
+def findTests(startDir, skipFiles=None):
+    if skipFiles is None:
+        skipFiles = []
     return find(startDir, fileIsTest, skipFiles)
 
 
@@ -45,7 +51,11 @@ def buildDoctestSuite(modules):
     return suite
 
 
-def buildUnittestSuites(paths=[], skip=[]):
+def buildUnittestSuites(paths=None, skip=None):
+    if paths is None:
+        paths = []
+    if skip is None:
+        skip = []
     """
     paths: a list of directories to search
     skip: a list of file names to skip

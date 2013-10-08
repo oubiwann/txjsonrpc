@@ -1,18 +1,19 @@
+from __future__ import print_function
 from twisted.internet import reactor, defer
 
 from txjsonrpc.web.jsonrpc import Proxy
 
 
 def printValue(value):
-    print "Result: %s" % str(value)
+    print("Result: %s" % str(value))
 
 
 def printError(error):
-    print 'error', error
+    print('error', error)
 
 
 def shutDown(data):
-    print "Shutting down reactor..."
+    print("Shutting down reactor...")
     reactor.stop()
 
 

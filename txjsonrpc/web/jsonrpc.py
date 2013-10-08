@@ -10,9 +10,16 @@ API Stability: unstable
 
 Maintainer: U{Duncan McGreggor<mailto:oubiwann@adytum.us>}
 """
-from __future__ import nested_scopes
-import urlparse
-import xmlrpclib
+from __future__ import nested_scopes, print_function
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
+
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
 
 from twisted.web import resource, server
 from twisted.internet import defer, reactor
@@ -28,6 +35,14 @@ Fault = xmlrpclib.Fault
 Binary = xmlrpclib.Binary
 Boolean = xmlrpclib.Boolean
 DateTime = xmlrpclib.DateTime
+
+
+def with_request(method):
+    """
+    Decorator to enable the request to be passed as the first argument.
+    """
+    method.with_request = True
+    return method
 
 
 def with_request(method):
@@ -122,7 +137,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         # versions...
         try:
             function = self._getFunction(functionPath)
-        except jsonrpclib.Fault, f:
+        except jsonrpclib.Fault as f:
             self._cbRender(f, request, id, version)
         else:
             if not self.is_jsonp:

@@ -164,7 +164,9 @@ class RPCFactory(protocol.ServerFactory):
                 p.putSubHandler(key, klass(*args, **kws))
         return p
 
-    def putSubHandler(self, name, klass, args=(), kws={}):
+    def putSubHandler(self, name, klass, args=(), kws=None):
+        if kws is None:
+            kws = {}
         self.subHandlers[name] = (klass, args, kws)
 
     def addIntrospection(self):

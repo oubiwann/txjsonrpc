@@ -96,7 +96,12 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         self.is_jsonp = True if self.callback else False
         parsed = jsonrpclib.loads(content)
         functionPath = parsed.get("method")
-        args = parsed.get('params', [])
+        params = parsed.get('params')
+        args, kwargs = [], {}
+        if params.__class__ == list:
+          args = params
+        else:
+          kwargs = params
         id = parsed.get('id')
         version = parsed.get('jsonrpc')
         if version:
@@ -116,7 +121,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
                 request.setHeader("content-type", "text/json")
             else:
                 request.setHeader("content-type", "text/javascript")
-            d = defer.maybeDeferred(function, *args)
+            d = defer.maybeDeferred(function, *args, **kwargs)
             d.addErrback(self._ebRender, id)
             d.addCallback(self._cbRender, request, id, version)
         return server.NOT_DONE_YET

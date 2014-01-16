@@ -88,6 +88,8 @@ class QueryFactoryTestCase(unittest.TestCase):
 
 class JSONRPCTestCase(unittest.TestCase):
 
+    timeout = 2
+
     def setUp(self):
         self.p = reactor.listenTCP(0, jsonrpc.RPCFactory(Test),
                                    interface="127.0.0.1")

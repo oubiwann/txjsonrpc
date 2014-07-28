@@ -150,7 +150,12 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         if isinstance(failure.value, jsonrpclib.Fault):
             return failure.value
         log.err(failure)
-        return jsonrpclib.Fault(self.FAILURE, "error")
+        error = {
+            'Error': "%s: %s" % (
+                type(failure.value).__name__, failure.value.message),
+            'exc': str(failure.value)
+            }
+        return error
 
 
 class QueryProtocol(http.HTTPClient):

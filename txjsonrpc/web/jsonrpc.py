@@ -96,7 +96,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         self.is_jsonp = True if self.callback else False
         parsed = jsonrpclib.loads(content)
         functionPath = parsed.get("method")
-        params = parsed.get('params')
+        params = parsed.get('params', {})
         args, kwargs = [], {}
         if params.__class__ == list:
           args = params

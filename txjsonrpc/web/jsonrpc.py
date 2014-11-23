@@ -85,6 +85,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
     def __init__(self):
         resource.Resource.__init__(self)
         BaseSubhandler.__init__(self)
+        self.except_map = {}
 
     def render(self, request):
         request.content.seek(0, 0)
@@ -146,16 +147,16 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         request.write(s)
         request.finish()
 
+    def _map_exception(self, exception):
+        return self.except_map.get(exception, self.FAILURE)
+
     def _ebRender(self, failure, id):
         if isinstance(failure.value, jsonrpclib.Fault):
             return failure.value
         log.err(failure)
-        error = {
-            'Error': "%s: %s" % (
-                type(failure.value).__name__, failure.value.message),
-            'exc': str(failure.value)
-            }
-        return error
+        message = failure.value.message
+        code = self._map_exception(type(failure.value))
+        return jsonrpclib.Fault(code, message)
 
 
 class QueryProtocol(http.HTTPClient):
@@ -164,7 +165,7 @@ class QueryProtocol(http.HTTPClient):
         self.sendCommand('POST', self.factory.path)
         self.sendHeader('User-Agent', 'Twisted/JSONRPClib')
         self.sendHeader('Host', self.factory.host)
-        self.sendHeader('Content-type', 'text/json')
+        self.sendHeader('Content-type', 'application/json')
         self.sendHeader('Content-length', str(len(self.factory.payload)))
         if self.factory.user:
             auth = '%s:%s' % (self.factory.user, self.factory.password)

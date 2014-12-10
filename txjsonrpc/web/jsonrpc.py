@@ -106,11 +106,13 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         params = parsed.get('params', {})
         args, kwargs = [], {}
         if params.__class__ == list:
-          args = params
+            args = params
         else:
-          kwargs = params
+            kwargs = params
         id = parsed.get('id')
-        token = kwargs.pop('token', '')
+        tokens = None
+        if request.requestHeaders.hasHeader('Auth-Token'):
+            token = request.requestHeaders.getRawHeaders('Auth-Token')[0]
         version = parsed.get('jsonrpc')
         if version:
             version = int(float(version))
@@ -126,6 +128,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
                 try:
                     self.auth(token, functionPath)
                 except Exception as e:
+                    log.err(e)
                     raise jsonrpclib.Fault(self.FAILURE, e.message)
         except jsonrpclib.Fault, f:
             self._cbRender(f, request, id, version)

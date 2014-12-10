@@ -123,7 +123,10 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         try:
             function = self._getFunction(functionPath)
             if hasattr(function, 'requires_auth'):
-                self.auth(token, functionPath)
+                try:
+                    self.auth(token, functionPath)
+                except Exception as e:
+                    raise jsonrpclib.Fault(self.FAILURE, e.message)
         except jsonrpclib.Fault, f:
             self._cbRender(f, request, id, version)
         else:

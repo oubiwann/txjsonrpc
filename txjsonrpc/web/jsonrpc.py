@@ -116,7 +116,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         else:
             kwargs = params
         id = parsed.get('id')
-        tokens = None
+        token = None
         if request.requestHeaders.hasHeader('Auth-Token'):
             token = request.requestHeaders.getRawHeaders('Auth-Token')[0]
         version = parsed.get('jsonrpc')

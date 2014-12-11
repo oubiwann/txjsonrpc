@@ -42,6 +42,12 @@ class NoSuchFunction(Fault):
     """
 
 
+class Unauthorized(Fault):
+
+    def __init__(self, message):
+        Fault.__init__(self, 4000, message)
+
+
 class Handler:
     """
     Handle a JSON-RPC request and store the state for a request in progress.
@@ -87,11 +93,11 @@ class JSONRPC(resource.Resource, BaseSubhandler):
     FAILURE = 8002
 
     isLeaf = 1
+    except_map = {}
 
     def __init__(self):
         resource.Resource.__init__(self)
         BaseSubhandler.__init__(self)
-        self.except_map = {}
 
     def render(self, request):
         request.content.seek(0, 0)
@@ -129,7 +135,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
                     self.auth(token, functionPath)
                 except Exception as e:
                     log.err(e)
-                    raise jsonrpclib.Fault(self.FAILURE, e.message)
+                    raise Unauthorized(e.message)
         except jsonrpclib.Fault, f:
             self._cbRender(f, request, id, version)
         else:

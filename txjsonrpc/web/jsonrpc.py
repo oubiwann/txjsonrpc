@@ -133,7 +133,8 @@ class JSONRPC(resource.Resource, BaseSubhandler):
             function = self._getFunction(functionPath)
             if hasattr(function, 'requires_auth'):
                 try:
-                    payload = self.auth(token, functionPath)
+                    id_= kwargs.get('id', None)
+                    payload = self.auth(token, functionPath, id_)
                 except Exception as e:
                     log.err(e)
                     raise Unauthorized(e.message)
@@ -180,7 +181,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         code = self._map_exception(type(failure.value))
         return jsonrpclib.Fault(code, message)
 
-    def auth(self, token, func):
+    def auth(self, token, func, id_=None):
         return True
 
 

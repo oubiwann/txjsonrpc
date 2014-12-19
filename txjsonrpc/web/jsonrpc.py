@@ -17,7 +17,7 @@ from functools import wraps
 
 from twisted.web import resource, server
 from twisted.internet import defer, reactor
-from twisted.python import log
+from twisted.python import log, context
 from twisted.web import http
 
 from txjsonrpc import jsonrpclib
@@ -128,11 +128,12 @@ class JSONRPC(resource.Resource, BaseSubhandler):
             version = jsonrpclib.VERSION_PRE1
         # XXX this all needs to be re-worked to support logic for multiple
         # versions...
+        payload = {}
         try:
             function = self._getFunction(functionPath)
             if hasattr(function, 'requires_auth'):
                 try:
-                    self.auth(token, functionPath)
+                    payload = self.auth(token, functionPath)
                 except Exception as e:
                     log.err(e)
                     raise Unauthorized(e.message)
@@ -143,7 +144,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
                 request.setHeader("content-type", "application/json")
             else:
                 request.setHeader("content-type", "text/javascript")
-            d = defer.maybeDeferred(function, *args, **kwargs)
+            d = defer.maybeDeferred(context.call, payload, function, *args, **kwargs)
             d.addErrback(self._ebRender, id)
             d.addCallback(self._cbRender, request, id, version)
 

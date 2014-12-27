@@ -13,7 +13,6 @@ Maintainer: U{Duncan McGreggor<mailto:oubiwann@adytum.us>}
 from __future__ import nested_scopes
 import urlparse
 import xmlrpclib
-from functools import wraps
 
 from twisted.web import resource, server
 from twisted.internet import defer, reactor
@@ -31,9 +30,12 @@ Boolean = xmlrpclib.Boolean
 DateTime = xmlrpclib.DateTime
 
 
-def requires_auth(method):
-    method.requires_auth = True
-    return method
+def requires_auth(requires=None):
+    def inner(method):
+        method.requires_auth = True
+        method.requires = requires
+        return method
+    return inner
 
 
 class NoSuchFunction(Fault):
@@ -133,8 +135,9 @@ class JSONRPC(resource.Resource, BaseSubhandler):
             function = self._getFunction(functionPath)
             if hasattr(function, 'requires_auth'):
                 try:
-                    id_= kwargs.get('id', None)
-                    payload = self.auth(token, functionPath, id_)
+                    id_ = kwargs.get('id', None)
+                    payload = self.auth(
+                        token, functionPath, id_, function.requires)
                 except Exception as e:
                     log.err(e)
                     raise Unauthorized(e.message)
@@ -181,7 +184,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         code = self._map_exception(type(failure.value))
         return jsonrpclib.Fault(code, message)
 
-    def auth(self, token, func, id_=None):
+    def auth(self, token, func, id_=None, requires=None):
         return True
 
 

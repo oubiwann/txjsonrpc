@@ -44,7 +44,7 @@ class NoSuchFunction(Fault):
     """
 
 
-class Unauthorized(Fault):
+class Unauthorized(jsonrpclib.Fault):
 
     def __init__(self, message):
         Fault.__init__(self, 4000, message)

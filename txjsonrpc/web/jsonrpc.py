@@ -30,10 +30,10 @@ Boolean = xmlrpclib.Boolean
 DateTime = xmlrpclib.DateTime
 
 
-def requires_auth(requires=None):
+def requires_auth(privileges=None):
     def inner(method):
         method.requires_auth = True
-        method.requires = requires
+        method.privileges = privileges
         return method
     return inner
 
@@ -137,7 +137,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
                 try:
                     id_ = kwargs.get('id', None)
                     payload = self.auth(
-                        token, functionPath, id_, function.requires)
+                        token, functionPath, id_)
                 except Exception as e:
                     log.err(e)
                     raise Unauthorized(e.message)
@@ -184,7 +184,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         code = self._map_exception(type(failure.value))
         return jsonrpclib.Fault(code, message)
 
-    def auth(self, token, func, id_=None, requires=None):
+    def auth(self, token, func, id_=None):
         return True
 
 

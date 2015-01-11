@@ -130,17 +130,11 @@ class JSONRPC(resource.Resource, BaseSubhandler):
             version = jsonrpclib.VERSION_PRE1
         # XXX this all needs to be re-worked to support logic for multiple
         # versions...
-        payload = {}
         try:
             function = self._getFunction(functionPath)
+            d = None
             if hasattr(function, 'requires_auth'):
-                try:
-                    id_ = kwargs.get('id', None)
-                    payload = self.auth(
-                        token, functionPath, id_)
-                except Exception as e:
-                    log.err(e)
-                    raise Unauthorized(e.message)
+                d = defer.maybeDeferred(self.auth, token, functionPath)
         except jsonrpclib.Fault, f:
             self._cbRender(f, request, id, version)
         else:
@@ -148,7 +142,10 @@ class JSONRPC(resource.Resource, BaseSubhandler):
                 request.setHeader("content-type", "application/json")
             else:
                 request.setHeader("content-type", "text/javascript")
-            d = defer.maybeDeferred(context.call, payload, function, *args, **kwargs)
+            if d:
+                d.addCallback(context.call, function, *args, **kwargs)
+            else:
+                d = defer.maybeDeferred(function, *args, **kwargs)
             d.addErrback(self._ebRender, id)
             d.addCallback(self._cbRender, request, id, version)
 
@@ -184,7 +181,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         code = self._map_exception(type(failure.value))
         return jsonrpclib.Fault(code, message)
 
-    def auth(self, token, func, id_=None):
+    def auth(self, token, func):
         return True
 
 

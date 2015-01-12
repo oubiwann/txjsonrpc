@@ -30,14 +30,6 @@ Boolean = xmlrpclib.Boolean
 DateTime = xmlrpclib.DateTime
 
 
-def requires_auth(privileges=None):
-    def inner(method):
-        method.requires_auth = True
-        method.privileges = privileges
-        return method
-    return inner
-
-
 class NoSuchFunction(Fault):
     """
     There is no function by the given name.

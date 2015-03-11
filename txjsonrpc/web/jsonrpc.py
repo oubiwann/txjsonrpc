@@ -30,6 +30,13 @@ Boolean = xmlrpclib.Boolean
 DateTime = xmlrpclib.DateTime
 
 
+def requires_auth():
+    def inner(method):
+        method.requires_auth = True
+        return method
+    return inner
+
+
 class NoSuchFunction(Fault):
     """
     There is no function by the given name.
@@ -88,6 +95,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
 
     isLeaf = 1
     except_map = {}
+    auth_token = "Auth-Token"
 
     def __init__(self):
         resource.Resource.__init__(self)
@@ -97,6 +105,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         request.content.seek(0, 0)
         # Unmarshal the JSON-RPC data.
         content = request.content.read()
+        log.msg("Client({}): {}".format(request.client, content))
         if not content and request.method=='GET' and request.args.has_key('request'):
             content=request.args['request'][0]
         self.callback = request.args['callback'][0] if request.args.has_key('callback') else None
@@ -111,8 +120,8 @@ class JSONRPC(resource.Resource, BaseSubhandler):
             kwargs = params
         id = parsed.get('id')
         token = None
-        if request.requestHeaders.hasHeader('Auth-Token'):
-            token = request.requestHeaders.getRawHeaders('Auth-Token')[0]
+        if request.requestHeaders.hasHeader(self.auth_token):
+            token = request.requestHeaders.getRawHeaders(self.auth_token)[0]
         version = parsed.get('jsonrpc')
         if version:
             version = int(float(version))

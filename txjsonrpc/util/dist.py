@@ -43,7 +43,7 @@ def hasDocutils():
     """
     try:
         import docutils
-        return True
+        return docutils
     except ImportError:
         return False
 

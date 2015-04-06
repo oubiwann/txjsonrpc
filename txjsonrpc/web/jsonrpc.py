@@ -130,7 +130,8 @@ class JSONRPC(resource.Resource, BaseSubhandler):
             request.notifyFinish().addErrback(_responseFailed, d)
         return server.NOT_DONE_YET
 
-    def _cbRender(self, result, request, id, version):
+    def _cbRender(self, original_result, request, id, version):
+        result = original_result
         if isinstance(result, Handler):
             result = result.result
         if version == jsonrpclib.VERSION_PRE1:
@@ -145,6 +146,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         request.setHeader("content-length", str(len(s)))
         request.write(s)
         request.finish()
+        return original_result
 
     def _ebRender(self, failure, id):
         if isinstance(failure.value, jsonrpclib.Fault):

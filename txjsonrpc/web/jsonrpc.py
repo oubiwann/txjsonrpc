@@ -118,7 +118,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
             self._cbRender(f, request, id, version)
         else:
             if not self.is_jsonp:
-                request.setHeader("content-type", "text/json")
+                request.setHeader("content-type", "application/json")
             else:
                 request.setHeader("content-type", "text/javascript")
             d = defer.maybeDeferred(function, *args, **kwargs)

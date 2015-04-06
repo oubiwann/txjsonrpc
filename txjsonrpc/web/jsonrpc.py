@@ -124,6 +124,10 @@ class JSONRPC(resource.Resource, BaseSubhandler):
             d = defer.maybeDeferred(function, *args, **kwargs)
             d.addErrback(self._ebRender, id)
             d.addCallback(self._cbRender, request, id, version)
+
+            def _responseFailed(err, call):
+                call.cancel()
+            request.notifyFinish().addErrback(_responseFailed, d)
         return server.NOT_DONE_YET
 
     def _cbRender(self, result, request, id, version):

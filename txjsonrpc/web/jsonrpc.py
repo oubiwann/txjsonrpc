@@ -30,6 +30,14 @@ Boolean = xmlrpclib.Boolean
 DateTime = xmlrpclib.DateTime
 
 
+def with_request(method):
+    """
+    Decorator to enable the request to be passed as the first argument.
+    """
+    method.with_request = True
+    return method
+
+
 class NoSuchFunction(Fault):
     """
     There is no function by the given name.
@@ -121,6 +129,10 @@ class JSONRPC(resource.Resource, BaseSubhandler):
                 request.setHeader("content-type", "application/json")
             else:
                 request.setHeader("content-type", "text/javascript")
+
+            if hasattr(function, 'with_request'):
+                args = [request] + args
+
             d = defer.maybeDeferred(function, *args, **kwargs)
             d.addErrback(self._ebRender, id)
             d.addCallback(self._cbRender, request, id, version)

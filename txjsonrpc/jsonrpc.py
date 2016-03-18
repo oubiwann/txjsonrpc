@@ -44,7 +44,8 @@ class BaseSubhandler:
                 raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND,
                     "no such sub-handler %s" % prefix)
             return handler._getFunction(functionPath)
-
+        if functionPath == '__dir__':
+            return self._listFunctions
         f = getattr(self, "jsonrpc_%s" % functionPath, None)
         if not f:
             raise jsonrpclib.NoSuchFunction(jsonrpclib.METHOD_NOT_FOUND,

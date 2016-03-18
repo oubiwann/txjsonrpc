@@ -16,7 +16,7 @@ import xmlrpclib
 
 from twisted.web import resource, server
 from twisted.internet import defer, reactor
-from twisted.python import log
+from twisted.python import log, context
 from twisted.web import http
 
 from txjsonrpc import jsonrpclib
@@ -37,11 +37,23 @@ def with_request(method):
     method.with_request = True
     return method
 
+def requires_auth():
+    def inner(method):
+        method.requires_auth = True
+        return method
+    return inner
+
 
 class NoSuchFunction(Fault):
     """
     There is no function by the given name.
     """
+
+
+class Unauthorized(jsonrpclib.Fault):
+
+    def __init__(self, message):
+        Fault.__init__(self, 4000, message)
 
 
 class Handler:
@@ -89,6 +101,8 @@ class JSONRPC(resource.Resource, BaseSubhandler):
     FAILURE = 8002
 
     isLeaf = 1
+    except_map = {}
+    auth_token = "Auth-Token"
 
     def __init__(self):
         resource.Resource.__init__(self)
@@ -98,6 +112,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         request.content.seek(0, 0)
         # Unmarshal the JSON-RPC data.
         content = request.content.read()
+        log.msg("Client({}): {}".format(request.client, content))
         if not content and request.method=='GET' and request.args.has_key('request'):
             content=request.args['request'][0]
         self.callback = request.args['callback'][0] if request.args.has_key('callback') else None
@@ -107,10 +122,13 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         params = parsed.get('params', {})
         args, kwargs = [], {}
         if params.__class__ == list:
-          args = params
+            args = params
         else:
-          kwargs = params
+            kwargs = params
         id = parsed.get('id')
+        token = None
+        if request.requestHeaders.hasHeader(self.auth_token):
+            token = request.requestHeaders.getRawHeaders(self.auth_token)[0]
         version = parsed.get('jsonrpc')
         if version:
             version = int(float(version))
@@ -122,6 +140,9 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         # versions...
         try:
             function = self._getFunction(functionPath)
+            d = None
+            if hasattr(function, 'requires_auth'):
+                d = defer.maybeDeferred(self.auth, token, functionPath)
         except jsonrpclib.Fault, f:
             self._cbRender(f, request, id, version)
         else:
@@ -132,8 +153,10 @@ class JSONRPC(resource.Resource, BaseSubhandler):
 
             if hasattr(function, 'with_request'):
                 args = [request] + args
-
-            d = defer.maybeDeferred(function, *args, **kwargs)
+            elif d:
+                d.addCallback(context.call, function, *args, **kwargs)
+            else:
+                d = defer.maybeDeferred(function, *args, **kwargs)
             d.addErrback(self._ebRender, id)
             d.addCallback(self._cbRender, request, id, version)
 
@@ -160,11 +183,19 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         request.finish()
         return original_result
 
+    def _map_exception(self, exception):
+        return self.except_map.get(exception, self.FAILURE)
+
     def _ebRender(self, failure, id):
         if isinstance(failure.value, jsonrpclib.Fault):
             return failure.value
         log.err(failure)
-        return jsonrpclib.Fault(self.FAILURE, "error")
+        message = failure.value.message
+        code = self._map_exception(type(failure.value))
+        return jsonrpclib.Fault(code, message)
+
+    def auth(self, token, func):
+        return True
 
 
 class QueryProtocol(http.HTTPClient):
@@ -173,7 +204,7 @@ class QueryProtocol(http.HTTPClient):
         self.sendCommand('POST', self.factory.path)
         self.sendHeader('User-Agent', 'Twisted/JSONRPClib')
         self.sendHeader('Host', self.factory.host)
-        self.sendHeader('Content-type', 'text/json')
+        self.sendHeader('Content-type', 'application/json')
         self.sendHeader('Content-length', str(len(self.factory.payload)))
         if self.factory.user:
             auth = '%s:%s' % (self.factory.user, self.factory.password)

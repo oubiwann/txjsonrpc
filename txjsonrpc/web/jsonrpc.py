@@ -194,9 +194,6 @@ class JSONRPC(resource.Resource, BaseSubhandler):
     def _map_exception(self, exception):
         return self.except_map.get(exception, self.FAILURE)
 
-    def _map_exception(self, exception):
-        return self.except_map.get(exception, self.FAILURE)
-
     def _ebRender(self, failure, id):
         if isinstance(failure.value, jsonrpclib.Fault):
             return failure.value

@@ -68,7 +68,7 @@ def dumps(obj, **kwargs):
         else:
             error = {'message': obj.faultString,
                     'code': obj.faultCode,
-                    'data': obj.faultString}
+                    'data': ''}
     else:
         result = obj
         error = None

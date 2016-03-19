@@ -23,7 +23,7 @@ except ImportError:
 
 from twisted.web import resource, server
 from twisted.internet import defer, reactor
-from twisted.python import log
+from twisted.python import log, context
 from twisted.web import http
 
 from txjsonrpc import jsonrpclib
@@ -44,18 +44,12 @@ def with_request(method):
     method.with_request = True
     return method
 
+
 def requires_auth():
     def inner(method):
         method.requires_auth = True
         return method
     return inner
-
-def with_request(method):
-    """
-    Decorator to enable the request to be passed as the first argument.
-    """
-    method.with_request = True
-    return method
 
 
 class NoSuchFunction(Fault):
@@ -196,6 +190,9 @@ class JSONRPC(resource.Resource, BaseSubhandler):
         request.write(s)
         request.finish()
         return original_result
+
+    def _map_exception(self, exception):
+        return self.except_map.get(exception, self.FAILURE)
 
     def _map_exception(self, exception):
         return self.except_map.get(exception, self.FAILURE)

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import logging
 from twisted.internet import reactor, ssl
 from txjsonrpc.web.jsonrpc import Proxy
@@ -6,13 +8,13 @@ from OpenSSL import SSL
 from twisted.python import log
 
 def printValue(value):
-    print "Result: %s" % str(value)
+    print("Result: %s" % str(value))
 
 def printError(error):
-    print 'error', error
+    print('error', error)
 
 def shutDown(data):
-    print "Shutting down reactor..."
+    print("Shutting down reactor...")
     reactor.stop()
 
 def verifyCallback(connection, x509, errnum, errdepth, ok):

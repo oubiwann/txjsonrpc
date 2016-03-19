@@ -21,9 +21,7 @@ class HTTPAuthRealm(object):
         raise NotImplementedError()
 
 
-def wrapResource(resource, checkers, credFactories=[],
-                            realmName=""):
-
+def wrapResource(resource, checkers, credFactories=[], realmName=""):
     defaultCredFactory = guard.BasicCredentialFactory(realmName)
     credFactories.insert(0, defaultCredFactory)
     realm = HTTPAuthRealm(resource)

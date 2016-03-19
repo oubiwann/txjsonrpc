@@ -10,13 +10,20 @@ API Stability: unstable
 
 Maintainer: U{Duncan McGreggor<mailto:oubiwann@adytum.us>}
 """
-from __future__ import nested_scopes
-import urlparse
-import xmlrpclib
+from __future__ import nested_scopes, print_function
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
+
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
 
 from twisted.web import resource, server
 from twisted.internet import defer, reactor
-from twisted.python import log, context
+from twisted.python import log
 from twisted.web import http
 
 from txjsonrpc import jsonrpclib
@@ -42,6 +49,13 @@ def requires_auth():
         method.requires_auth = True
         return method
     return inner
+
+def with_request(method):
+    """
+    Decorator to enable the request to be passed as the first argument.
+    """
+    method.with_request = True
+    return method
 
 
 class NoSuchFunction(Fault):
@@ -143,7 +157,7 @@ class JSONRPC(resource.Resource, BaseSubhandler):
             d = None
             if hasattr(function, 'requires_auth'):
                 d = defer.maybeDeferred(self.auth, token, functionPath)
-        except jsonrpclib.Fault, f:
+        except jsonrpclib.Fault as f:
             self._cbRender(f, request, id, version)
         else:
             if not self.is_jsonp:

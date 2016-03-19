@@ -3,6 +3,7 @@
 """
 Test JSON-RPC over TCP support.
 """
+from __future__ import print_function
 from twisted.internet import reactor, defer
 from twisted.trial import unittest
 
@@ -111,8 +112,8 @@ class JSONRPCTestCase(unittest.TestCase):
             ("complex", (), {"a": ["b", "c", 12, []], "D": "foo"})]
 
         def printError(error):
-            print "Error!"
-            print error
+            print("Error!")
+            print(error)
 
         dl = []
         for meth, args, outp in inputOutput:
@@ -192,8 +193,8 @@ class JSONRPCMethodMaxLengthTestCase(JSONRPCTestCase):
                 QueryFactory.__init__(self, *args)
 
         def printError(error):
-            print "Error!"
-            print error
+            print("Error!")
+            print(error)
 
         dl = []
         for meth, args, outp in inputOutput:
